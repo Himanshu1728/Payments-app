@@ -120,29 +120,37 @@ export const updateUserCredentials = async (req, res) => {
     }
   };
 
-  export const searchUsers = async (req, res) => {
-    const name = req.query.filter;
-    const [firstname, lastName] = name.split("%20");  // Splitting the string by space ("%20")
+export const searchUsers= async (req, res) => {
+    const filter = req.query.filter || "";
+  
+    if (!filter) {
+      return res.status(400).json({ message: "Filter query is required" });
+    }
   
     try {
-      // MongoDB query to find users with the matching FirstName or LastName
-      const user = await User.find({
-        $or: [{ FirstName: firstname }, { LastName: lastName }],
-      }).select('-password');  // Excluding the password field
+      const users = await User.find({
+        $or: [
+          { firstName: { "$regex": filter, "$options": "i" } },  // Case-insensitive regex search
+          { lastName: { "$regex": filter, "$options": "i" } }
+        ]
+      });
   
-      if (user.length === 0) {
-        return res.status(404).json({
-          message: "User not found",
-        });
+      if (users.length === 0) {
+        return res.status(404).json({ message: "No users found" });
       }
   
-      return res.status(200).json({
-        users: user,
-        message: "Users successfully fetched",
+      res.json({
+        users: users.map(user => ({
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          _id: user._id
+        }))
       });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: "Server error occurred" });
+      res.status(500).json({ message: "Server error occurred" });
     }
   };
+  
   
