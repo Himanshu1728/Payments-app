@@ -119,3 +119,30 @@ export const updateUserCredentials = async (req, res) => {
       return res.status(500).json({ message: "Server error occurred" });
     }
   };
+
+  export const searchUsers = async (req, res) => {
+    const name = req.query.filter;
+    const [firstname, lastName] = name.split("%20");  // Splitting the string by space ("%20")
+  
+    try {
+      // MongoDB query to find users with the matching FirstName or LastName
+      const user = await User.find({
+        $or: [{ FirstName: firstname }, { LastName: lastName }],
+      }).select('-password');  // Excluding the password field
+  
+      if (user.length === 0) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+  
+      return res.status(200).json({
+        users: user,
+        message: "Users successfully fetched",
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Server error occurred" });
+    }
+  };
+  
