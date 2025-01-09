@@ -1,5 +1,10 @@
 import mongoose from 'mongoose';
 const UserSchema = new mongoose.Schema({
+    email:{
+        type: String,
+        require: true,
+        unique:true,
+    },
     FirstName: {
         type: String,
         require: true
@@ -14,4 +19,5 @@ const UserSchema = new mongoose.Schema({
    }
 })
 
-const Mage = new mongoose.model("User", UserSchema)
+const User = new mongoose.model("User", UserSchema);
+export default User;
