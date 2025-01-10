@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
+import Account from "../models/account.model.js";
 
 
 const signupSchema = z.object({
@@ -39,10 +40,13 @@ export const signupcontroller = async (req, res) => {
     if (existingUser) {
       return res.status(403).json({ message: "User already exists" });
     }
-
+  
     const hashedPassword = await bcrypt.hash(Password, 10);
     const newUser = await User.create({ email, FirstName, LastName, Password: hashedPassword });
-
+    await Account.create({
+      userId:newUser._id,
+      balance: 1 + Math.random() * 10000
+  })
     return res.status(201).json({
       message: "User registered successfully",
       user: {
