@@ -10,19 +10,19 @@ const signupSchema = z.object({
   email: z.string().email({ message: "Invalid email format" }),
   FirstName: z.string().min(1, { message: "First name is required" }),
   LastName: z.string().min(1, { message: "Last name is required" }),
-  Password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
 });
 
 const signinSchema = z.object({
   email: z.string().email({ message: "Invalid email format" }),
-  Password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
 });
 
 const updateUserSchema = z.object({
   email: z.string().email({ message: "Invalid email format" }),
   FirstName: z.string().optional(),
   LastName: z.string().optional(),
-  Password: z.string().min(6, { message: "Current password must be at least 6 characters long" }),
+  password: z.string().min(6, { message: "Current password must be at least 6 characters long" }),
   newPassword: z.string().min(6, { message: "New password must be at least 6 characters long" }).optional(),
 });
 
@@ -33,20 +33,21 @@ export const signupcontroller = async (req, res) => {
     return res.status(400).json({ errors: validation.error.errors });
   }
 
-  const { email, FirstName, LastName, Password } = validation.data;
+  const { email, FirstName, LastName, password } = validation.data;
 
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(403).json({ message: "User already exists" });
     }
-  
-    const hashedPassword = await bcrypt.hash(Password, 10);
-    const newUser = await User.create({ email, FirstName, LastName, Password: hashedPassword });
+
+    const hashedPassword = await bcrypt.hash(password, 10);  // Corrected here
+    const newUser = await User.create({ email, FirstName, LastName, password: hashedPassword });  // Corrected here
     await Account.create({
-      userId:newUser._id,
+      userId: newUser._id,
       balance: 1 + Math.random() * 10000
-  })
+    });
+
     return res.status(201).json({
       message: "User registered successfully",
       user: {
@@ -69,7 +70,7 @@ export const signincontroller = async (req, res) => {
     return res.status(400).json({ errors: validation.error.errors });
   }
 
-  const { email, Password } = validation.data;
+  const { email, password } = validation.data;  // Corrected here
 
   try {
     const existingUser = await User.findOne({ email });
@@ -77,7 +78,7 @@ export const signincontroller = async (req, res) => {
       return res.status(401).json({ message: "User does not exist" });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(Password, existingUser.Password);
+    const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);  // Corrected here
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Wrong credentials" });
     }
@@ -105,7 +106,7 @@ export const updateUserCredentials = async (req, res) => {
     return res.status(400).json({ errors: validation.error.errors });
   }
 
-  const { email, FirstName, LastName, Password, newPassword } = validation.data;
+  const { email, FirstName, LastName, password, newPassword } = validation.data;  // Corrected here
 
   try {
     const user = await User.findOne({ email });
@@ -113,7 +114,7 @@ export const updateUserCredentials = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(Password, user.Password);
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);  // Corrected here
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Incorrect current password" });
     }
@@ -121,7 +122,7 @@ export const updateUserCredentials = async (req, res) => {
     let updatedFields = { FirstName, LastName };
     if (newPassword) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      updatedFields.Password = hashedPassword;
+      updatedFields.password = hashedPassword;  // Corrected here
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -142,5 +143,41 @@ export const updateUserCredentials = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error occurred" });
+  }
+};
+
+
+
+
+export const searchUsers = async (req, res) => {
+  const filter = req.query.filter || "";
+
+  if (!filter) {
+    return res.status(400).json({ message: "Filter query is required" });
+  }
+
+  try {
+    const users = await User.find({
+      $or: [
+        { firstName: { "$regex": filter, "$options": "i" } },  // Case-insensitive regex search
+        { lastName: { "$regex": filter, "$options": "i" } }
+      ]
+    });
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    res.json({
+      users: users.map(user => ({
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        _id: user._id
+      }))
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error occurred" });
   }
 };
