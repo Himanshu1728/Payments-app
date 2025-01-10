@@ -42,19 +42,21 @@ export const transferFunds = async (req, res) => {
 
 
 export const getbalance = async (req, res) => {
-  const { id } = req.user?.id; // User ID
-
+    
+  const  id  = req.user?.id; // User ID
+  
   if (!id) {
     return res.status(400).json({ message: "User ID is required" });
   }
-
+ console.log("hello")
   try {
     // Find the account using the user's ID
     const account = await Account.findOne({ userId: id });
+    console.log("account")
     if (!account) {
       return res.status(404).json({ message: "Account not found for this user" });
     }
-
+    console.log(account.balance);
     return res.status(200).json({
       balance: account.balance,
       message: "Balance retrieved successfully",
