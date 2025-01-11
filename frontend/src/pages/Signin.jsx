@@ -23,6 +23,8 @@ const Signin = () => {
       try {
         const response = await axios.post("http://localhost:8080/api/v1/user/signin", formData);
         console.log('Server Response:', response.data);
+        const token = response.data.token;
+       localStorage.setItem("Authorization", `Bearer ${token}`);
        navigate("/dashboard");
       } catch (error) {
         console.error('Error submitting the form:', error.response?.data || error.message);

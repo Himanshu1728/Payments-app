@@ -1,10 +1,17 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [balance,setbalance]=useState(0);
-  useEffect(()=>{
-
+  useEffect(async ()=>{
+    try {
+      const response = await axios.get("http://localhost:8080/api/v1/account/getBalance");
+     setbalance(response.data.balance)
+     navigate("/dashboard");
+    } catch (error) {
+      console.error('Error submitting the form:', error.response?.data || error.message);
+    }
   },[])
   const users = [
     { id: 1, name: 'John Doe', avatar: 'https://via.placeholder.com/40' },
