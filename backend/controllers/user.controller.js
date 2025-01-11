@@ -160,7 +160,7 @@ export const searchUsers = async (req, res) => {
         { LastName: { "$regex": filter, "$options": "i" } }
       ]
     });
-console.log(users)
+
     if (users.length === 0) {
       return res.status(404).json({ message: "No users found" });
     }
@@ -168,9 +168,9 @@ console.log(users)
     // Format the response to return user details
     res.json({
       users: users.map(user => ({
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        email: user.email,
+        FirstName: user.FirstName,
+        LastName: user.LastName,
         _id: user._id
       }))
     });

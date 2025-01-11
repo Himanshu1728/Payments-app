@@ -31,7 +31,9 @@ const Dashboard = () => {
           }
         });
         
+        
         setUsers(response2.data.users);
+        console.log(response2.data.users);
          // Update users from the correct response
       } catch (error) {
         console.error('Error fetching balance or users:', error.response?.data || error.message);
@@ -66,7 +68,7 @@ const Dashboard = () => {
       <div className="flex-1 p-6">
         {/* Balance */}
         <div className="text-2xl font-bold mb-6">
-          Your Balance: <span className="text-green-600">${balance}</span>
+          Your Balance: <span className="text-green-600">₹{balance}</span>
         </div>
 
         {/* Search Input */}
@@ -86,13 +88,10 @@ const Dashboard = () => {
                 key={user.id}
                 className="flex items-center justify-between p-4 border rounded-md border-gray-200"
               >
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div className="text-lg font-semibold">{user.name}</div>
+                  <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 flex items-center justify-center bg-gray-300 rounded-full text-lg font-bold">
+                {user.FirstName[0]?.toUpperCase() || 'U'}</div>
+                  <div className="text-lg font-semibold">{user.FirstName} {user.LastName}</div>
                 </div>
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-md">
                   Send Money
