@@ -1,18 +1,36 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
+
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [balance,setbalance]=useState(0);
-  useEffect(async ()=>{
-    try {
-      const response = await axios.get("http://localhost:8080/api/v1/account/getBalance");
-     setbalance(response.data.balance)
-     navigate("/dashboard");
-    } catch (error) {
-      console.error('Error submitting the form:', error.response?.data || error.message);
-    }
-  },[])
+  const [balance, setBalance] = useState(0);
+ 
+
+  useEffect(() => {
+    const token = localStorage.getItem("Authorization"); // Get token from localStorage
+    
+    const fetchBalance = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/v1/account/getBalance", {
+          headers: {
+            Authorization: token // Attach the token with the correct header key
+          }
+        });
+        
+        
+        const formattedBalance = response.data.balance.toFixed(2); // Format balance to 2 decimals
+setBalance(parseFloat(formattedBalance)); // Set balance from API response
+        
+      } catch (error) {
+        console.error('Error fetching balance:', error.response?.data || error.message);
+      }
+    };
+    
+    fetchBalance(); // Call the fetch balance function
+
+  }, []);
+
   const users = [
     { id: 1, name: 'John Doe', avatar: 'https://via.placeholder.com/40' },
     { id: 2, name: 'Jane Smith', avatar: 'https://via.placeholder.com/40' },
@@ -42,7 +60,7 @@ const Dashboard = () => {
       <div className="flex-1 p-6">
         {/* Balance */}
         <div className="text-2xl font-bold mb-6">
-          Your Balance: <span className="text-green-600">$1,500.00</span>
+          Your Balance: <span className="text-green-600">${balance}</span>
         </div>
 
         {/* Search Input */}

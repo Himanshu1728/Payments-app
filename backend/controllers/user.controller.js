@@ -45,7 +45,7 @@ export const signupcontroller = async (req, res) => {
     const newUser = await User.create({ email, FirstName, LastName, password: hashedPassword });  // Corrected here
     await Account.create({
       userId: newUser._id,
-      balance: 1 + Math.random() * 10000
+      balance: 1 + Math.random() * 100000
     });
 
     return res.status(201).json({
