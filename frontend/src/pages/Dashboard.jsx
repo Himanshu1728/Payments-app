@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useDebounce from "../hooks/useDebounce"; // Import the debounce hook
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -8,6 +9,9 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Debounced search query
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const handleSendMoney = (user) => {
     navigate(`/send?userid=${user._id}&Firstname=${user.FirstName}&Lastname=${user.LastName}`);
@@ -21,10 +25,11 @@ const Dashboard = () => {
       return;
     }
 
-    const fetchBalance = async () => {
+    const fetchBalanceAndUsers = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
+        // Fetch balance
+        const balanceResponse = await axios.get(
           "http://localhost:8080/api/v1/account/getBalance",
           {
             headers: {
@@ -32,22 +37,21 @@ const Dashboard = () => {
             },
           }
         );
+        setBalance(parseFloat(balanceResponse.data.balance.toFixed(2)));
 
-        setBalance(parseFloat(response.data.balance.toFixed(2)));
-
-        const response2 = await axios.get(
+        // Fetch users
+        const usersResponse = await axios.get(
           "http://localhost:8080/api/v1/user/bulk",
           {
             headers: {
               Authorization: token,
             },
             params: {
-              filter: searchQuery,
+              filter: debouncedSearchQuery,
             },
           }
         );
-
-        setUsers(response2.data?.users || []);
+        setUsers(usersResponse.data?.users || []);
       } catch (error) {
         console.error("Error fetching data:", error.response?.data || error.message);
       } finally {
@@ -55,8 +59,8 @@ const Dashboard = () => {
       }
     };
 
-    fetchBalance();
-  }, [searchQuery, navigate]);
+    fetchBalanceAndUsers();
+  }, [debouncedSearchQuery, navigate]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -71,12 +75,8 @@ const Dashboard = () => {
       {/* AppBar */}
       <div className="flex justify-between items-center bg-gray-800 p-4">
         <div className="text-white font-bold text-xl">PaymentsApp</div>
-        <div className="w-10 h-10 rounded-full bg-gray-400">
-          <img
-            src="https://via.placeholder.com/40"
-            alt="Avatar"
-            className="w-full h-full rounded-full object-cover"
-          />
+        <div className="w-10 h-10 flex items-center justify-center bg-gray-300 rounded-full text-lg font-bold">
+          {"H"}
         </div>
       </div>
 
@@ -130,4 +130,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-``
