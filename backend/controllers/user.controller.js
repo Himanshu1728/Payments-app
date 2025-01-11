@@ -150,24 +150,22 @@ export const updateUserCredentials = async (req, res) => {
 
 
 export const searchUsers = async (req, res) => {
-  const filter = req.query.filter || "";
-
-  if (!filter) {
-    return res.status(400).json({ message: "Filter query is required" });
-  }
+  const filter = req.query.filter || ""; // Only define filter once
 
   try {
+    // Search for users based on the filter in either firstName or lastName
     const users = await User.find({
       $or: [
-        { firstName: { "$regex": filter, "$options": "i" } },  // Case-insensitive regex search
-        { lastName: { "$regex": filter, "$options": "i" } }
+        { FirstName: { "$regex": filter, "$options": "i" } },  // Case-insensitive regex search
+        { LastName: { "$regex": filter, "$options": "i" } }
       ]
     });
-
+console.log(users)
     if (users.length === 0) {
       return res.status(404).json({ message: "No users found" });
     }
 
+    // Format the response to return user details
     res.json({
       users: users.map(user => ({
         username: user.username,

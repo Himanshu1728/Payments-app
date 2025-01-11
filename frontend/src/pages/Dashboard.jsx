@@ -1,40 +1,46 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
-
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [balance, setBalance] = useState(0);
- 
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("Authorization"); // Get token from localStorage
     
     const fetchBalance = async () => {
       try {
+        // Fetch balance
         const response = await axios.get("http://localhost:8080/api/v1/account/getBalance", {
           headers: {
             Authorization: token // Attach the token with the correct header key
           }
         });
         
-        
         const formattedBalance = response.data.balance.toFixed(2); // Format balance to 2 decimals
-setBalance(parseFloat(formattedBalance)); // Set balance from API response
+        setBalance(parseFloat(formattedBalance)); // Set balance from API response
+
+        // Fetch users with filter query
+        const response2 = await axios.get("http://localhost:8080/api/v1/user/bulk", {
+          headers: {
+            Authorization: token // Attach the token with the correct header key
+          },
+          params: {
+            filter: searchQuery // Pass the filter query here
+          }
+        });
         
+        setUsers(response2.data.users);
+         // Update users from the correct response
       } catch (error) {
-        console.error('Error fetching balance:', error.response?.data || error.message);
+        console.error('Error fetching balance or users:', error.response?.data || error.message);
       }
     };
     
     fetchBalance(); // Call the fetch balance function
 
-  }, []);
-
-  const users = [
-    { id: 1, name: 'John Doe', avatar: 'https://via.placeholder.com/40' },
-    { id: 2, name: 'Jane Smith', avatar: 'https://via.placeholder.com/40' },
-  ];
+  }, [searchQuery]); // Re-run the effect when searchQuery changes
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -75,9 +81,6 @@ setBalance(parseFloat(formattedBalance)); // Set balance from API response
         {/* Users List */}
         <div className="space-y-4">
           {users
-            .filter((user) =>
-              user.name.toLowerCase().includes(searchQuery.toLowerCase())
-            )
             .map((user) => (
               <div
                 key={user.id}
