@@ -126,78 +126,38 @@ export const createMoneyRequest = async (req, res) => {
   
   
 
-  export const getCreditTransactions = async (req, res) => {
-    const userId = req.user?.id;  // Get the current userId from the authenticated request
+  export const getAccountSummary = async (req, res) => {
+    const userId = req.user?.id;
   
     try {
-      // Fetch the account that belongs to the user
       const account = await Account.findOne({ userId });
   
       if (!account) {
         return res.status(404).json({ message: "Account not found" });
       }
   
-      // Filter the credit transactions
-      const creditTransactions = account.transactions.filter(transaction => transaction.type === 'credit');
-  
-      return res.status(200).json({ creditTransactions });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Error fetching credit transactions", error: error.message });
-    }
-  };
-
-  
-  export const getDebitTransactions = async (req, res) => {
-    const userId = req.user?.id;  // Get the current userId from the authenticated request
-  
-    try {
-      // Fetch the account that belongs to the user
-      const account = await Account.findOne({ userId });
-  
-      if (!account) {
-        return res.status(404).json({ message: "Account not found" });
-      }
-  
-      // Filter the debit transactions
-      const debitTransactions = account.transactions.filter(transaction => transaction.type === 'debit');
-  
-      return res.status(200).json({ debitTransactions });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Error fetching debit transactions", error: error.message });
-    }
-  };
-
-  
-  export const getTotalMoneyDebitedAndCredited = async (req, res) => {
-    const userId = req.user?.id;  // Get the current userId from the authenticated request
-  
-    try {
-      // Fetch the account that belongs to the user
-      const account = await Account.findOne({ userId });
-  
-      if (!account) {
-        return res.status(404).json({ message: "Account not found" });
-      }
-  
-      // Calculate total debited amount
+      // Calculate totals
       const totalDebited = account.transactions
         .filter(transaction => transaction.type === 'debit')
         .reduce((total, transaction) => total + transaction.amount, 0);
   
-      // Calculate total credited amount
       const totalCredited = account.transactions
         .filter(transaction => transaction.type === 'credit')
         .reduce((total, transaction) => total + transaction.amount, 0);
   
+      // Paginate or fetch limited transactions (e.g., latest 5)
+      const creditTransactions = account.transactions.filter(transaction => transaction.type === 'credit').slice(0, 5);
+      const debitTransactions = account.transactions.filter(transaction => transaction.type === 'debit').slice(0, 5);
+  
       return res.status(200).json({
+        creditTransactions,
+        debitTransactions,
         totalDebited,
-        totalCredited,
+        totalCredited
       });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: "Error calculating totals", error: error.message });
+      return res.status(500).json({ message: "Error fetching account summary", error: error.message });
     }
   };
   

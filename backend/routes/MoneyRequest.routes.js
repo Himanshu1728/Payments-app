@@ -3,6 +3,7 @@ import {
   createMoneyRequest,
   viewMoneyRequests,
   handleMoneyRequest,
+  getAccountSummary,
 } from "../controllers/moneyRequest.controller.js";
 import { isSignedIn } from "../middlewares/user.middlewares.js";
 
@@ -16,5 +17,11 @@ router.get("/moneyRequests", isSignedIn, viewMoneyRequests);
 
 // Accept or reject a money request (logs the transaction if accepted)
 router.post("/handleRequest", isSignedIn, handleMoneyRequest);
+
+
+
+router.get("/accountSummary", isSignedIn, getAccountSummary);
+
+
 
 export default router;
