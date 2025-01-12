@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import User from "./user.model.js";
+
 
 const accountSchema = mongoose.Schema({
   userId: {
@@ -12,7 +12,26 @@ const accountSchema = mongoose.Schema({
     default: 0,
     min: 0, 
   },
+  transactions: [
+    {
+      type: {
+        type: String, // 'debit' or 'credit'
+        required: true,
+      },
+      amount: {
+        type: Number,
+        required: true,
+      },
+      description: String,
+      fromAccountId: mongoose.Types.ObjectId, // Reference to the sender for debit transactions
+      toAccountId: mongoose.Types.ObjectId,   // Reference to the receiver for credit transactions
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
 });
 
-const Account = mongoose.model("Account", accountSchema); 
+const Account = mongoose.model("Account", accountSchema);
 export default Account;

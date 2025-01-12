@@ -69,3 +69,81 @@ export const handleMoneyRequest = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+// Create a new money request
+export const createMoneyRequest = async (req, res) => {
+    try {
+      const { receiverId, amount, description } = req.body;
+      const senderId = req.user?.id;
+  
+      if (!receiverId || !amount) {
+        return res.status(400).json({ message: "Receiver ID and amount are required" });
+      }
+  
+      // Check if receiver exists
+      const receiverAccount = await Account.findOne({ userId: receiverId });
+      if (!receiverAccount) {
+        return res.status(404).json({ message: "Receiver not found" });
+      }
+  
+      // Create the money request
+      const moneyRequest = new MoneyRequest({
+        senderId,
+        receiverId,
+        amount,
+        description,
+      });
+      await moneyRequest.save();
+  
+      res.status(201).json({
+        success: true,
+        message: "Money request created successfully",
+        data: moneyRequest,
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+  
+  // View money requests (for the logged-in user)
+  export const viewMoneyRequests = async (req, res) => {
+    try {
+      const userId = req.user?.id;
+  
+      const requests = await MoneyRequest.find({
+        $or: [{ senderId: userId }, { receiverId: userId }],
+      }).populate("senderId", "email FirstName LastName")
+        .populate("receiverId", "email FirstName LastName");
+  
+      res.status(200).json({
+        success: true,
+        message: "Money requests retrieved successfully",
+        data: requests,
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+  
+  
+
+  export const getCreditTransactions = async (req, res) => {
+    const userId = req.user?.id;  // Get the current userId from the authenticated request
+  
+    try {
+      // Fetch the account that belongs to the user
+      const account = await Account.findOne({ userId });
+  
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+  
+      // Filter the credit transactions
+      const creditTransactions = account.transactions.filter(transaction => transaction.type === 'credit');
+  
+      return res.status(200).json({ creditTransactions });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Error fetching credit transactions", error: error.message });
+    }
+  };
+  

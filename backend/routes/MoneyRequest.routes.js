@@ -4,7 +4,7 @@ import {
   viewMoneyRequests,
   handleMoneyRequest,
 } from "../controllers/moneyRequest.controller.js";
-import { isSignedIn } from "../middlewares/auth.js";
+import { isSignedIn } from "../middlewares/user.middlewares.js";
 
 const router = express.Router();
 
