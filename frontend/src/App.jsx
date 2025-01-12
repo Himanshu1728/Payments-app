@@ -1,5 +1,6 @@
 
 import Dashboard from './pages/Dashboard';
+import Dashboard2 from './pages/Dashboard2';
 import SendMoney from './pages/SendMoney';
 import Signin from './pages/Signin';
 import Signup from './pages/Signup';
@@ -12,6 +13,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard2" element={<Dashboard2 />} />
         <Route path="/send" element={<SendMoney />} />
       </Routes>
     </BrowserRouter>
