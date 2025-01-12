@@ -168,4 +168,36 @@ export const createMoneyRequest = async (req, res) => {
       return res.status(500).json({ message: "Error fetching debit transactions", error: error.message });
     }
   };
+
+  
+  export const getTotalMoneyDebitedAndCredited = async (req, res) => {
+    const userId = req.user?.id;  // Get the current userId from the authenticated request
+  
+    try {
+      // Fetch the account that belongs to the user
+      const account = await Account.findOne({ userId });
+  
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+  
+      // Calculate total debited amount
+      const totalDebited = account.transactions
+        .filter(transaction => transaction.type === 'debit')
+        .reduce((total, transaction) => total + transaction.amount, 0);
+  
+      // Calculate total credited amount
+      const totalCredited = account.transactions
+        .filter(transaction => transaction.type === 'credit')
+        .reduce((total, transaction) => total + transaction.amount, 0);
+  
+      return res.status(200).json({
+        totalDebited,
+        totalCredited,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Error calculating totals", error: error.message });
+    }
+  };
   
