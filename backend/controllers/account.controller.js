@@ -86,3 +86,53 @@ export const getbalance = async (req, res) => {
     return res.status(500).json({ message: "Server error occurred" });
   }
 };
+
+
+
+
+export const addBalance = async (req, res) => {
+  try {
+    const userId = req.user?.id; // Get the user ID from the request (assuming authentication is done)
+    const { amount } = req.body; // The amount to be added to the balance
+
+    // Check if the amount is valid (greater than zero)
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: "Amount must be greater than zero" });
+    }
+
+    // Find the user's account
+    const account = await Account.findOne({  userId:userId });
+
+    if (!account) {
+      return res.status(404).json({ message: "Account not found" });
+    }
+
+    // Add the amount to the account balance
+    account.balance += amount;
+
+    // Create a transaction record for the added balance
+    const transactionDetails = {
+      type: "credit", // Since we are adding balance, it's a credit transaction
+      amount: amount,
+      description: `Balance added: ₹${amount}`,
+      createdAt: new Date(),
+    };
+
+    // Push the transaction details to the user's transaction history
+    account.transactions.push(transactionDetails);
+
+    // Save the updated account
+    await account.save();
+
+    // Respond with a success message
+    res.status(200).json({
+      success: true,
+      message: `₹${amount} added successfully to your account`,
+      balance: account.balance,
+      transaction: transactionDetails,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error adding balance to account", error: error.message });
+  }
+};
