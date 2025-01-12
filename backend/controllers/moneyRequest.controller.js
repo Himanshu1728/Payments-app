@@ -146,4 +146,26 @@ export const createMoneyRequest = async (req, res) => {
       return res.status(500).json({ message: "Error fetching credit transactions", error: error.message });
     }
   };
+
+  
+  export const getDebitTransactions = async (req, res) => {
+    const userId = req.user?.id;  // Get the current userId from the authenticated request
+  
+    try {
+      // Fetch the account that belongs to the user
+      const account = await Account.findOne({ userId });
+  
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+  
+      // Filter the debit transactions
+      const debitTransactions = account.transactions.filter(transaction => transaction.type === 'debit');
+  
+      return res.status(200).json({ debitTransactions });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Error fetching debit transactions", error: error.message });
+    }
+  };
   
