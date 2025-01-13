@@ -1,5 +1,6 @@
 import MoneyRequest from "../models/MoneyRequest.model.js";
 import Account from "../models/account.model.js";
+import User from "../models/user.model.js";
 
 export const handleMoneyRequest = async (req, res) => {
   const { requestId, action } = req.body;
@@ -181,15 +182,25 @@ console.log(req.user);
 
     // Paginate or fetch limited transactions (e.g., latest 5)
     const totalTransactions = account.transactions.slice(0, 5);
-    const creditTransactions = account.transactions.filter(transaction => transaction.type === 'credit').slice(0, 5);
-    const debitTransactions = account.transactions.filter(transaction => transaction.type === 'debit').slice(0, 5);
+    const creditTransactions = account.transactions.filter(transaction => transaction.type === 'credit');
+    const debitTransactions = account.transactions.filter(transaction => transaction.type === 'debit');
+    const user = await User.findById(userId).select("-password");
 
+    console.log({
+      totalTransactions,
+      creditTransactions,
+      debitTransactions,
+      totalDebited,
+      totalCredited,
+     user
+    })
     return res.status(200).json({
       totalTransactions,
       creditTransactions,
       debitTransactions,
       totalDebited,
       totalCredited,
+     user
     });
   } catch (error) {
     console.error(error);

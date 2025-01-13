@@ -6,9 +6,9 @@ const AccountDetails = () => {
     firstName: '',
     lastName: '',
     email: '',
-    totalTransactions: 0,
-    creditTransactions: 0,
-    debitTransactions: 0,
+    totalTransactions: [],
+    creditTransactions: [],
+    debitTransactions: [],
     totalDebited: 0,
     totalCredited: 0,
   });
@@ -24,11 +24,26 @@ const AccountDetails = () => {
       }
 
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/account/details', {
+        const response = await axios.get('http://localhost:8080/api/v1/moneyrequest/accountSummary', {
           headers: { Authorization: token },
         });
 
-        setUserData(response.data.data);
+        const { totalTransactions, totalDebited, totalCredited } = response.data;
+        const {FirstName, LastName, email}= response.data.user;
+        // Separate credit and debit transactions
+        const creditTransactions = totalTransactions.filter(txn => txn.type === 'credit');
+        const debitTransactions = totalTransactions.filter(txn => txn.type === 'debit');
+      console.log(response.data);
+        setUserData({
+          FirstName,
+          LastName,
+          email,
+          totalTransactions,
+          creditTransactions,
+          debitTransactions,
+          totalDebited,
+          totalCredited,
+        });
       } catch (error) {
         console.error('Error fetching account details:', error.response?.data || error.message);
         alert('Failed to fetch account details. Please try again.');
@@ -52,7 +67,7 @@ const AccountDetails = () => {
           <div className="bg-white p-4 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-700">User Information</h2>
             <p className="text-gray-600">
-              <strong>Full Name: </strong>{userData.firstName} {userData.lastName}
+              <strong>Full Name: </strong>{userData.FirstName} {userData.LastName}
             </p>
             <p className="text-gray-600">
               <strong>Email: </strong>{userData.email}
@@ -63,27 +78,50 @@ const AccountDetails = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-4 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-gray-700">Total Transactions</h2>
-              <p className="text-gray-600">{userData.totalTransactions}</p>
+              // Map only the first 5 transactions for each category
+<ul className="space-y-2">
+  {userData.totalTransactions.slice(0, 5).map((txn, index) => (
+    <li key={index} className="text-gray-600">
+      <strong>{txn.type === 'credit' ? 'Credit' : 'Debit'}:</strong> ₹{txn.amount} - {txn.description} <br />
+      <span className="text-sm text-gray-500">Date: {new Date(txn.date).toLocaleString()}</span>
+    </li>
+  ))}
+</ul>
+
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-gray-700">Credit Transactions</h2>
-              <p className="text-gray-600">{userData.creditTransactions}</p>
+              <ul className="space-y-2">
+                {userData.creditTransactions.map((txn, index) => (
+                  <li key={index} className="text-gray-600">
+                    <strong>Credit:</strong> ₹{txn.amount} - {txn.description} <br />
+                    <span className="text-sm text-gray-500">Date: {new Date(txn.date).toLocaleString()}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-gray-700">Debit Transactions</h2>
-              <p className="text-gray-600">{userData.debitTransactions}</p>
+              <ul className="space-y-2">
+                {userData.debitTransactions.map((txn, index) => (
+                  <li key={index} className="text-gray-600">
+                    <strong>Debit:</strong> ₹{txn.amount} - {txn.description} <br />
+                    <span className="text-sm text-gray-500">Date: {new Date(txn.date).toLocaleString()}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-gray-700">Total Debited</h2>
-              <p className="text-gray-600">₹{userData.totalDebited}</p>
+              <p className="text-red-600">₹{userData.totalDebited}</p> {/* Red color for debited */}
             </div>
 
             <div className="bg-white p-4 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-gray-700">Total Credited</h2>
-              <p className="text-gray-600">₹{userData.totalCredited}</p>
+              <p className="text-green-600">₹{userData.totalCredited}</p> {/* Green color for credited */}
             </div>
           </div>
         </div>

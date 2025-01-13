@@ -35,6 +35,12 @@ const Tabs = ({ onTabChange }) => {
       >
         Money Requests
       </button>
+      <button
+        onClick={() => handleTabClick("accountSummary")}
+        className={`py-2 px-4 rounded-md ${activeTab === "accountSummary" ? "bg-blue-600 text-white" : "bg-gray-300"}`}
+      >
+       Account Summary
+      </button>
     </div>
   );
 };
