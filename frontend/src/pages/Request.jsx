@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 
-const SendMoney = () => {
+const Request = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userid");
   const firstName = searchParams.get("Firstname");
   const lastName = searchParams.get("Lastname");
   const navigate = useNavigate();
   const [amount, setAmount] = useState("");
-  const [note, setNote] = useState(""); // Added state for note
+  const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const SendMoney = () => {
     }
   }, [navigate]);
 
-  const handleSendMoney = async () => {
+  const handleRequestMoney = async () => {
     if (!amount || amount <= 0) {
       alert("Please enter a valid amount.");
       return;
@@ -36,11 +36,11 @@ const SendMoney = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/account/transaction",
+        "http://localhost:8080/api/v1/moneyrequest/requestMoney",
         {
-          toAccountId: userId,
+            receiverId: userId,
           amount: amount,
-          description: note, // Pass the note to the API
+          description: note,
         },
         {
           headers: {
@@ -49,13 +49,13 @@ const SendMoney = () => {
         }
       );
 
-      alert(`Successfully sent ₹${amount} to ${firstName} ${lastName} with note: "${note}"!`);
-      setAmount(""); // Clear input field
-      setNote(""); // Clear note field
+      alert(`Successfully requested ₹${amount} from ${firstName} ${lastName} with note: "${note}"!`);
+      setAmount("");
+      setNote("");
       navigate("/dashboard2");
     } catch (error) {
-      console.error("Error during transaction:", error.response?.data || error.message);
-      alert("Transaction failed. Please try again.");
+      console.error("Error during request:", error.response?.data || error.message);
+      alert("Request failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -66,14 +66,14 @@ const SendMoney = () => {
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-md w-full">
         {/* Modal Heading */}
         <h2 className="text-xl font-bold mb-4">
-          Payment to {firstName} {lastName}
+          Request Money from {firstName} {lastName}
         </h2>
 
         {/* Amount Input */}
         <label className="block mb-2 text-gray-600">Enter Amount:</label>
         <input
           type="number"
-          placeholder="Enter amount to send"
+          placeholder="Enter amount to request"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="w-full p-3 border rounded-md mb-4 border-gray-300"
@@ -89,19 +89,19 @@ const SendMoney = () => {
           className="w-full p-3 border rounded-md mb-4 border-gray-300"
         />
 
-        {/* Send Money Button */}
+        {/* Request Money Button */}
         <button
-          onClick={handleSendMoney}
+          onClick={handleRequestMoney}
           disabled={loading}
           className={`w-full text-white py-3 rounded-md transition duration-200 ${
-            loading ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"
+            loading ? "bg-gray-500" : "bg-green-600 hover:bg-green-700"
           }`}
         >
-          {loading ? "Processing..." : "Send Money"}
+          {loading ? "Processing..." : "Request Money"}
         </button>
       </div>
     </div>
   );
 };
 
-export default SendMoney;
+export default Request;
