@@ -8,7 +8,7 @@ import SendMoney from "../components/SendMoney";
 import AddMoney from "../components/AddMoney";
 import RequestMoney from "../components/RequestMoney";
 import useDebounce from "../hooks/useDebounce";
-
+import Moneyrequests from "../components/Moneyrequests"
 const Dashboard2 = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [balance, setBalance] = useState(0);
@@ -87,6 +87,7 @@ const Dashboard2 = () => {
         {activeTab === "send" && <SendMoney  />}
         {activeTab === "add" && <AddMoney />}
         {activeTab === "request" && <RequestMoney />}
+        {activeTab === "checkrequest" && <Moneyrequests />}
       </div>
     </div>
   );

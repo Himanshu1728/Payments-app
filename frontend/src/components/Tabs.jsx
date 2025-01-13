@@ -29,6 +29,12 @@ const Tabs = ({ onTabChange }) => {
       >
         Request Money
       </button>
+      <button
+        onClick={() => handleTabClick("checkrequest")}
+        className={`py-2 px-4 rounded-md ${activeTab === "checkrequest" ? "bg-blue-600 text-white" : "bg-gray-300"}`}
+      >
+        Money Requests
+      </button>
     </div>
   );
 };
