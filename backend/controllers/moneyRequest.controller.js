@@ -111,12 +111,27 @@ export const createMoneyRequest = async (req, res) => {
 
 export const viewMoneyRequests = async (req, res) => {
   const userId = req.user?.id;
+  const { type } = req.query; // type: 'sent', 'received', or 'all'
 
   try {
-    const requests = await MoneyRequest.find({
-      $or: [{ senderId: userId }, { receiverId: userId }],
-    }).populate("senderId", "email FirstName LastName")
-      .populate("receiverId", "email FirstName LastName");
+    let requests;
+
+    if (type === "received") {
+      requests = await MoneyRequest.find({ receiverId: userId })
+        .populate("senderId", "email FirstName LastName")
+        .populate("receiverId", "email FirstName LastName");
+    } else if (type === "sent") {
+      requests = await MoneyRequest.find({ senderId: userId })
+        .populate("senderId", "email FirstName LastName")
+        .populate("receiverId", "email FirstName LastName");
+    } else {
+      // Default to 'all' if type is not specified or is invalid
+      requests = await MoneyRequest.find({
+        $or: [{ senderId: userId }, { receiverId: userId }],
+      })
+        .populate("senderId", "email FirstName LastName")
+        .populate("receiverId", "email FirstName LastName");
+    }
 
     res.status(200).json({
       success: true,
@@ -127,6 +142,7 @@ export const viewMoneyRequests = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const getAccountSummary = async (req, res) => {
   const userId = req.user?.id;
