@@ -11,6 +11,7 @@ const Request = () => {
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("Authorization");
@@ -21,25 +22,26 @@ const Request = () => {
   }, [navigate]);
 
   const handleRequestMoney = async () => {
+    setError("");
     if (!amount || amount <= 0) {
-      alert("Please enter a valid amount.");
+      setError("Please enter a valid amount.");
       return;
     }
 
     const token = localStorage.getItem("Authorization");
     if (!token) {
-      alert("Authorization token is missing. Please log in again.");
+      setError("Authorization token is missing. Please log in again.");
       navigate("/signin");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8080/api/v1/moneyrequest/requestMoney",
         {
-            receiverId: userId,
-          amount: amount,
+          receiverId: userId,
+          amount: parseFloat(amount),
           description: note,
         },
         {
@@ -49,55 +51,86 @@ const Request = () => {
         }
       );
 
-      alert(`Successfully requested ₹${amount} from ${firstName} ${lastName} with note: "${note}"!`);
+      alert(`Successfully requested ₹${amount} from ${firstName} ${lastName}!`);
       setAmount("");
       setNote("");
-      navigate("/dashboard2");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error during request:", error.response?.data || error.message);
-      alert("Request failed. Please try again.");
+      setError("Request failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-200">
-      <div className="bg-white shadow-lg rounded-lg p-6 max-w-md w-full">
-        {/* Modal Heading */}
-        <h2 className="text-xl font-bold mb-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex justify-center items-center p-4">
+      <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full space-y-6">
+        <h2 className="text-3xl font-bold text-gray-800 text-center">
           Request Money from {firstName} {lastName}
         </h2>
 
-        {/* Amount Input */}
-        <label className="block mb-2 text-gray-600">Enter Amount:</label>
-        <input
-          type="number"
-          placeholder="Enter amount to request"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="w-full p-3 border rounded-md mb-4 border-gray-300"
-        />
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+              Amount (₹)
+            </label>
+            <div className="relative rounded-md shadow-sm">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span className="text-gray-500 sm:text-sm">₹</span>
+              </div>
+              <input
+                type="number"
+                id="amount"
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="focus:ring-green-500 focus:border-green-500 py-2 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+              />
+            </div>
+          </div>
 
-        {/* Note Input */}
-        <label className="block mb-2 text-gray-600">Add a Note:</label>
-        <input
-          type="text"
-          placeholder="Enter a transaction note (optional)"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          className="w-full p-3 border rounded-md mb-4 border-gray-300"
-        />
+          <div>
+            <label htmlFor="note" className="block text-sm font-medium text-gray-700 mb-1">
+              Note (optional)
+            </label>
+            <textarea
+              id="note"
+              rows="3"
+              placeholder="Add a note for this request"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              className="focus:ring-green-500 focus:border-green-500  block w-full sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
+        </div>
 
-        {/* Request Money Button */}
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-400 p-4 mt-4">
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        )}
+
         <button
           onClick={handleRequestMoney}
           disabled={loading}
-          className={`w-full text-white py-3 rounded-md transition duration-200 ${
-            loading ? "bg-gray-500" : "bg-green-600 hover:bg-green-700"
+          className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           }`}
         >
-          {loading ? "Processing..." : "Request Money"}
+          {loading ? (
+            <>
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Processing...
+            </>
+          ) : (
+            "Request Money"
+          )}
         </button>
       </div>
     </div>
@@ -105,3 +138,4 @@ const Request = () => {
 };
 
 export default Request;
+

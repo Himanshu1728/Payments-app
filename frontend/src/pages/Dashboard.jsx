@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useDebounce from "../hooks/useDebounce"; // Import the debounce hook
+import { Cloud } from "lucide-react";
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -75,7 +76,10 @@ const Dashboard = () => {
     <div className="min-h-screen flex flex-col">
       {/* AppBar */}
       <div className="flex justify-between items-center bg-gray-800 p-4">
-        <div className="text-white font-bold text-xl">PaymentsApp</div>
+      <div className="flex items-center space-x-2">
+            <Cloud className="w-8 h-8 bg-yellow-400" />
+            <span className="text-2xl font-bold text-gray-800">PaymentsApp</span>
+          </div>
         <div className="w-10 h-10 flex items-center justify-center bg-gray-300 rounded-full text-lg font-bold">
           {"H"}
         </div>

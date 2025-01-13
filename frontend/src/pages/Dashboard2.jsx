@@ -9,6 +9,7 @@ import RequestMoney from "../components/RequestMoney";
 import useDebounce from "../hooks/useDebounce";
 import Moneyrequests from "../components/Moneyrequests";
 import AccountDetails from "../components/AccountDetails";
+import { Cloud } from "lucide-react";
 
 const Dashboard2 = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -64,7 +65,10 @@ const Dashboard2 = () => {
       {/* AppBar */}
       <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">PaymentsApp</h1>
+        <div className="flex items-center space-x-2">
+            <Cloud className="w-8 h-8 " />
+            <span className="text-2xl font-bold text-white">PaymentsApp</span>
+          </div>
           <div className="w-10 h-10 flex items-center justify-center bg-white text-indigo-600 rounded-full text-lg font-bold shadow-md">
             H
           </div>
