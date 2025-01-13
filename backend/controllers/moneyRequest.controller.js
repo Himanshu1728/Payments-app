@@ -3,7 +3,7 @@ import Account from "../models/account.model.js";
 
 export const handleMoneyRequest = async (req, res) => {
   const { requestId, action } = req.body;
-  const receiverId = req.user._id;
+  const receiverId = req.user?.id;
 
   if (!["accepted", "rejected"].includes(action)) {
     return res.status(400).json({ message: "Invalid action" });
@@ -11,12 +11,8 @@ export const handleMoneyRequest = async (req, res) => {
 
   try {
     // Find the money request
-    const moneyRequest = await MoneyRequest.findOne({
-      _id: requestId,
-      receiverId,
-      status: "pending",
-    });
-
+    const moneyRequest = await MoneyRequest.findById(requestId);
+console.log(moneyRequest);
     if (!moneyRequest) {
       return res.status(404).json({ message: "Money request not found or already handled" });
     }
@@ -37,7 +33,7 @@ export const handleMoneyRequest = async (req, res) => {
       receiverAccount.balance -= moneyRequest.amount;
       senderAccount.balance += moneyRequest.amount;
 
-      // Transaction details
+      // Transaction details for both sender and receiver
       const transactionDetails = {
         type: "credit",
         amount: moneyRequest.amount,
@@ -49,19 +45,22 @@ export const handleMoneyRequest = async (req, res) => {
         type: "debit",
       };
 
-      // Save the transactions
+      // Save the transactions in both accounts
       senderAccount.transactions.push(transactionDetails);
       receiverAccount.transactions.push(debitTransactionDetails);
 
-      // Save the accounts and money request
+      // Save updated accounts
       await senderAccount.save();
       await receiverAccount.save();
 
+      // Update money request status
       moneyRequest.status = "accepted";
     } else {
+      // If rejected, just update the status
       moneyRequest.status = "rejected";
     }
 
+    // Save the updated money request
     await moneyRequest.save();
 
     res.status(200).json({
@@ -70,10 +69,11 @@ export const handleMoneyRequest = async (req, res) => {
       data: moneyRequest,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error handling money request:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const createMoneyRequest = async (req, res) => {
   const { receiverId, amount, description } = req.body;

@@ -17,7 +17,7 @@ const MoneyRequests = () => {
     try {
       // Fetch requests for the logged-in user (received requests)
       const response = await axios.get(
-        "http://localhost:8080/api/v1/moneyrequest/moneyRequests",
+        "http://localhost:8080/api/v1/moneyrequest/moneyRequests?type=received",
         {
           headers: {
             Authorization: token,
@@ -42,7 +42,7 @@ const MoneyRequests = () => {
     try {
       // Fetch requests sent by the logged-in user
       const response = await axios.get(
-        "http://localhost:8080/api/v1/moneyrequest/sentRequests",  // Endpoint for sent requests
+        "http://localhost:8080/api/v1/moneyrequest/moneyRequests?type=sent", // Correct endpoint for sent requests
         {
           headers: {
             Authorization: token,
@@ -71,20 +71,20 @@ const MoneyRequests = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/account/money-requests/${requestId}/${action}`,
-        {},
+        `http://localhost:8080/api/v1/moneyrequest/handleRequest`,
+        {requestId,action},
         {
           headers: {
             Authorization: token,
           },
         }
       );
-      alert(`Request ${action === "accept" ? "accepted" : "rejected"} successfully.`);
+      alert(`Request ${action === "accepted" ? "accepted" : "rejected"} successfully.`);
       setRequests((prevRequests) =>
-        prevRequests.filter((request) => request.id !== requestId)
+        prevRequests.filter((request) => request._id !== requestId)
       );
       setSentRequests((prevRequests) =>
-        prevRequests.filter((request) => request.id !== requestId)
+        prevRequests.filter((request) => request._id !== requestId)
       );
     } catch (error) {
       console.error(`Error ${action}ing request:`, error.response?.data || error.message);
@@ -94,28 +94,28 @@ const MoneyRequests = () => {
     }
   };
 
-  const renderRequest = (request) => (
+  const renderRequest = (request, isSent) => (
     <div key={request._id} className="flex justify-between items-center border-b py-4">
       <div>
-        <p><strong>From:</strong> {request.senderId.FirstName} {request.senderId.LastName} ({request.senderId.email})</p>
-        <p><strong>To:</strong> {request.receiverId.FirstName} {request.receiverId.LastName} ({request.receiverId.email})</p>
+        <p><strong>From:</strong> {request.senderId.FirstName} {request.senderId.LastName}</p>
+        <p><strong>To:</strong> {request.receiverId.FirstName} {request.receiverId.LastName} </p>
         <p><strong>Amount:</strong> ₹{request.amount}</p>
         <p><strong>Description:</strong> {request.description || "No description provided"}</p>
         <p><strong>Status:</strong> {request.status}</p>
         <p><strong>Requested At:</strong> {new Date(request.createdAt).toLocaleString()}</p>
       </div>
       <div className="flex gap-2">
-        {request.status === "pending" && (
+        {!isSent && request.status === "pending" && (
           <>
             <button
-              onClick={() => handleAction(request._id, "accept")}
+              onClick={() => handleAction(request._id, "accepted")}
               disabled={loading}
               className={`px-4 py-2 rounded-md text-white ${loading ? "bg-gray-500" : "bg-green-600 hover:bg-green-700"}`}
             >
               Accept
             </button>
             <button
-              onClick={() => handleAction(request._id, "reject")}
+              onClick={() => handleAction(request._id, "rejected")}
               disabled={loading}
               className={`px-4 py-2 rounded-md text-white ${loading ? "bg-gray-500" : "bg-red-600 hover:bg-red-700"}`}
             >
@@ -123,9 +123,23 @@ const MoneyRequests = () => {
             </button>
           </>
         )}
+        {isSent && (
+          <p
+            className={`text-sm p-3 rounded-xl font-bold ${
+              request.status === "accepted"
+                ? "bg-green-300 text-green-800"
+                : request.status === "rejected"
+                ? "bg-red-300 text-red-800"
+                : "bg-yellow-300 text-yellow-800"
+            }`}
+          >
+            {request.status}
+          </p>
+        )}
       </div>
     </div>
   );
+  
 
   return (
     <div className="flex flex-col items-center bg-gray-100 min-h-screen p-4">
@@ -153,13 +167,13 @@ const MoneyRequests = () => {
           requests.length === 0 ? (
             <p className="text-center text-gray-600">No money requests available.</p>
           ) : (
-            requests.map(renderRequest)
+            requests.map((request) => renderRequest(request, false))
           )
         ) : (
           sentRequests.length === 0 ? (
             <p className="text-center text-gray-600">No sent money requests available.</p>
           ) : (
-            sentRequests.map(renderRequest)
+            sentRequests.map((request) => renderRequest(request, true))
           )
         )}
       </div>
