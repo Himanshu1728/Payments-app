@@ -9,6 +9,7 @@ const SendMoney = () => {
   const lastName = searchParams.get("Lastname");
   const navigate = useNavigate();
   const [amount, setAmount] = useState("");
+  const [note, setNote] = useState(""); // Added state for note
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -39,6 +40,7 @@ const SendMoney = () => {
         {
           toAccountId: userId,
           amount: amount,
+          description: note, // Pass the note to the API
         },
         {
           headers: {
@@ -47,9 +49,10 @@ const SendMoney = () => {
         }
       );
 
-      alert(`Successfully sent ₹${amount} to ${firstName} ${lastName}!`);
+      alert(`Successfully sent ₹${amount} to ${firstName} ${lastName} with note: "${note}"!`);
       setAmount(""); // Clear input field
-      navigate("/dashboard")
+      setNote(""); // Clear note field
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error during transaction:", error.response?.data || error.message);
       alert("Transaction failed. Please try again.");
@@ -73,6 +76,16 @@ const SendMoney = () => {
           placeholder="Enter amount to send"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          className="w-full p-3 border rounded-md mb-4 border-gray-300"
+        />
+
+        {/* Note Input */}
+        <label className="block mb-2 text-gray-600">Add a Note:</label>
+        <input
+          type="text"
+          placeholder="Enter a transaction note (optional)"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
           className="w-full p-3 border rounded-md mb-4 border-gray-300"
         />
 

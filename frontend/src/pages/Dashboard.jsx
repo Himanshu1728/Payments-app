@@ -53,6 +53,7 @@ const Dashboard = () => {
         );
         setUsers(usersResponse.data?.users || []);
       } catch (error) {
+        if(error.message==="Invalid or expired token")navigate("/signin");
         console.error("Error fetching data:", error.response?.data || error.message);
       } finally {
         setLoading(false);

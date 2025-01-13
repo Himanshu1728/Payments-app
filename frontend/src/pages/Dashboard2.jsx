@@ -84,7 +84,7 @@ const Dashboard2 = () => {
         <Tabs onTabChange={handleTabChange} />
 
         {/* Tab Content */}
-        {activeTab === "send" && <SendMoney users={users} />}
+        {activeTab === "send" && <SendMoney  />}
         {activeTab === "add" && <AddMoney />}
         {activeTab === "request" && <RequestMoney />}
       </div>

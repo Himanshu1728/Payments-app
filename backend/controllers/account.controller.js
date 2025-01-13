@@ -7,7 +7,7 @@ import User from "../models/user.model.js";
 export const transferFunds = async (req, res) => {
   const { toAccountId, amount, description } = req.body; // Extract data from the request body
   const fromAccountId = req.user?.id;
-
+if(!description) description="unknown reason"
   // Validate request payload
   if (!fromAccountId || !toAccountId || !amount || amount <= 0) {
     return res.status(400).json({ message: "Invalid request data" });
