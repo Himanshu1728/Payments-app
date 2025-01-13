@@ -1,46 +1,29 @@
-// src/components/Tabs.js
-import React, { useState } from "react";
+import React from "react";
 
-const Tabs = ({ onTabChange }) => {
-  const [activeTab, setActiveTab] = useState("send");
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-    onTabChange(tab);
-  };
+const Tabs = ({ onTabChange, activeTab }) => {
+  const tabs = [
+    { id: "send", label: "Send Money" },
+    { id: "add", label: "Add Money" },
+    { id: "request", label: "Request Money" },
+    { id: "checkrequest", label: "Money Requests" },
+    { id: "accountSummary", label: "Account Summary" },
+  ];
 
   return (
-    <div className="flex space-x-4 mb-6">
-      <button
-        onClick={() => handleTabClick("send")}
-        className={`py-2 px-4 rounded-md ${activeTab === "send" ? "bg-blue-600 text-white" : "bg-gray-300"}`}
-      >
-        Send Money
-      </button>
-      <button
-        onClick={() => handleTabClick("add")}
-        className={`py-2 px-4 rounded-md ${activeTab === "add" ? "bg-blue-600 text-white" : "bg-gray-300"}`}
-      >
-        Add Money
-      </button>
-      <button
-        onClick={() => handleTabClick("request")}
-        className={`py-2 px-4 rounded-md ${activeTab === "request" ? "bg-blue-600 text-white" : "bg-gray-300"}`}
-      >
-        Request Money
-      </button>
-      <button
-        onClick={() => handleTabClick("checkrequest")}
-        className={`py-2 px-4 rounded-md ${activeTab === "checkrequest" ? "bg-blue-600 text-white" : "bg-gray-300"}`}
-      >
-        Money Requests
-      </button>
-      <button
-        onClick={() => handleTabClick("accountSummary")}
-        className={`py-2 px-4 rounded-md ${activeTab === "accountSummary" ? "bg-blue-600 text-white" : "bg-gray-300"}`}
-      >
-       Account Summary
-      </button>
+    <div className="flex flex-wrap justify-center gap-2 mb-6">
+      {tabs.map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => onTabChange(tab.id)}
+          className={`py-2 px-4 rounded-full text-sm font-medium transition-all duration-200 ease-in-out ${
+            activeTab === tab.id
+              ? "bg-blue-600 text-white shadow-md"
+              : "bg-white text-gray-700 hover:bg-gray-100"
+          }`}
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
   );
 };

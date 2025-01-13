@@ -14,7 +14,6 @@ const AccountDetails = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  // Fetch user and account details from the API
   useEffect(() => {
     const fetchAccountDetails = async () => {
       const token = localStorage.getItem('Authorization');
@@ -29,11 +28,10 @@ const AccountDetails = () => {
         });
 
         const { totalTransactions, totalDebited, totalCredited } = response.data;
-        const {FirstName, LastName, email}= response.data.user;
-        // Separate credit and debit transactions
+        const { FirstName, LastName, email } = response.data.user;
         const creditTransactions = totalTransactions.filter(txn => txn.type === 'credit');
         const debitTransactions = totalTransactions.filter(txn => txn.type === 'debit');
-      console.log(response.data);
+
         setUserData({
           FirstName,
           LastName,
@@ -55,79 +53,86 @@ const AccountDetails = () => {
     fetchAccountDetails();
   }, []);
 
+  const TransactionList = ({ transactions, title, type }) => (
+    <div className="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
+      <ul className="space-y-3">
+        {transactions.slice(0, 5).map((txn, index) => (
+          <li key={index} className="text-gray-600 border-b border-gray-200 pb-2 last:border-b-0">
+            <span className={`font-medium ${type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+              ₹{txn.amount.toFixed(2)}
+            </span>
+            <span className="ml-2">{txn.description}</span>
+            <br />
+            <span className="text-sm text-gray-500">
+              {new Date(txn.date).toLocaleString()}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
   return (
-    <div className="bg-gray-50 p-6 rounded-lg shadow-lg max-w-4xl mx-auto mt-6">
-      {loading ? (
-        <div className="text-center text-lg font-semibold text-gray-500">Loading...</div>
-      ) : (
-        <div className="space-y-6">
-          <h1 className="text-2xl font-semibold text-center text-gray-800">Account Details</h1>
-
-          {/* User Information */}
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-700">User Information</h2>
-            <p className="text-gray-600">
-              <strong>Full Name: </strong>{userData.FirstName} {userData.LastName}
-            </p>
-            <p className="text-gray-600">
-              <strong>Email: </strong>{userData.email}
-            </p>
+    <div className="bg-gray-100 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
           </div>
+        ) : (
+          <div className="space-y-8">
+            <h1 className="text-3xl font-bold text-center text-gray-900">Account Details</h1>
 
-          {/* Transaction Information */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold text-gray-700">Total Transactions</h2>
-              // Map only the first 5 transactions for each category
-<ul className="space-y-2">
-  {userData.totalTransactions.slice(0, 5).map((txn, index) => (
-    <li key={index} className="text-gray-600">
-      <strong>{txn.type === 'credit' ? 'Credit' : 'Debit'}:</strong> ₹{txn.amount} - {txn.description} <br />
-      <span className="text-sm text-gray-500">Date: {new Date(txn.date).toLocaleString()}</span>
-    </li>
-  ))}
-</ul>
-
+            {/* User Information */}
+            <div className="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">User Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p className="text-gray-600">
+                  <span className="font-medium">Full Name:</span> {userData.FirstName} {userData.LastName}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-medium">Email:</span> {userData.email}
+                </p>
+              </div>
             </div>
 
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold text-gray-700">Credit Transactions</h2>
-              <ul className="space-y-2">
-                {userData.creditTransactions.map((txn, index) => (
-                  <li key={index} className="text-gray-600">
-                    <strong>Credit:</strong> ₹{txn.amount} - {txn.description} <br />
-                    <span className="text-sm text-gray-500">Date: {new Date(txn.date).toLocaleString()}</span>
-                  </li>
-                ))}
-              </ul>
+            {/* Transaction Summary */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Total Debited</h2>
+                <p className="text-3xl font-bold text-red-600">₹{userData.totalDebited.toFixed(2)}</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Total Credited</h2>
+                <p className="text-3xl font-bold text-green-600">₹{userData.totalCredited.toFixed(2)}</p>
+              </div>
             </div>
 
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold text-gray-700">Debit Transactions</h2>
-              <ul className="space-y-2">
-                {userData.debitTransactions.map((txn, index) => (
-                  <li key={index} className="text-gray-600">
-                    <strong>Debit:</strong> ₹{txn.amount} - {txn.description} <br />
-                    <span className="text-sm text-gray-500">Date: {new Date(txn.date).toLocaleString()}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold text-gray-700">Total Debited</h2>
-              <p className="text-red-600">₹{userData.totalDebited}</p> {/* Red color for debited */}
-            </div>
-
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold text-gray-700">Total Credited</h2>
-              <p className="text-green-600">₹{userData.totalCredited}</p> {/* Green color for credited */}
+            {/* Transaction Lists */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <TransactionList 
+                transactions={userData.totalTransactions} 
+                title="Recent Transactions" 
+                type="all"
+              />
+              <TransactionList 
+                transactions={userData.creditTransactions} 
+                title="Credit Transactions" 
+                type="credit"
+              />
+              <TransactionList 
+                transactions={userData.debitTransactions} 
+                title="Debit Transactions" 
+                type="debit"
+              />
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
 
 export default AccountDetails;
+
