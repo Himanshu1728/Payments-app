@@ -26,7 +26,7 @@ const updateUserSchema = z.object({
   newPassword: z.string().min(6, { message: "New password must be at least 6 characters long" }).optional(),
 });
 
-// Signup Controller
+
 export const signupcontroller = async (req, res) => {
   const validation = signupSchema.safeParse(req.body);
   if (!validation.success) {
@@ -41,8 +41,8 @@ export const signupcontroller = async (req, res) => {
       return res.status(403).json({ message: "User already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);  // Corrected here
-    const newUser = await User.create({ email, FirstName, LastName, password: hashedPassword });  // Corrected here
+    const hashedPassword = await bcrypt.hash(password, 10);  
+    const newUser = await User.create({ email, FirstName, LastName, password: hashedPassword });  
     await Account.create({
       userId: newUser._id,
       balance: 1 + Math.random() * 100000
@@ -63,14 +63,14 @@ export const signupcontroller = async (req, res) => {
   }
 };
 
-// Signin Controller
+
 export const signincontroller = async (req, res) => {
   const validation = signinSchema.safeParse(req.body);
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
   }
 
-  const { email, password } = validation.data;  // Corrected here
+  const { email, password } = validation.data;  
 
   try {
     const existingUser = await User.findOne({ email });
@@ -78,7 +78,7 @@ export const signincontroller = async (req, res) => {
       return res.status(401).json({ message: "User does not exist" });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);  // Corrected here
+    const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);  
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Wrong credentials" });
     }
@@ -99,7 +99,7 @@ export const signincontroller = async (req, res) => {
   }
 };
 
-// Update User Credentials Controller
+
 export const updateUserCredentials = async (req, res) => {
   const validation = updateUserSchema.safeParse(req.body);
   if (!validation.success) {
@@ -150,13 +150,13 @@ export const updateUserCredentials = async (req, res) => {
 
 
 export const searchUsers = async (req, res) => {
-  const filter = req.query.filter || ""; // Only define filter once
+  const filter = req.query.filter || ""; 
 
   try {
-    // Search for users based on the filter in either firstName or lastName
+   
     const users = await User.find({
       $or: [
-        { FirstName: { "$regex": filter, "$options": "i" } },  // Case-insensitive regex search
+        { FirstName: { "$regex": filter, "$options": "i" } },  
         { LastName: { "$regex": filter, "$options": "i" } }
       ]
     });

@@ -7,7 +7,8 @@ const MoneyRequests = () => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("received");
 
-  const fetchRequests = async () => {
+  // Consolidate fetching requests for both received and sent types
+  const fetchRequests = async (type) => {
     const token = localStorage.getItem("Authorization");
     if (!token) {
       alert("Authorization token is missing. Please log in again.");
@@ -15,50 +16,31 @@ const MoneyRequests = () => {
     }
 
     try {
-      // Fetch requests for the logged-in user (received requests)
       const response = await axios.get(
-        "http://localhost:8080/api/v1/moneyrequest/moneyRequests?type=received",
+        `http://localhost:8080/api/v1/moneyrequest/moneyRequests?type=${type}`,
         {
           headers: {
             Authorization: token,
           },
         }
       );
-      console.log(response.data);
-      setRequests(response.data.data);
+      return response.data.data;
     } catch (error) {
-      console.error("Error fetching money requests:", error.response?.data || error.message);
-      alert("Failed to fetch requests. Please try again.");
-    }
-  };
-
-  const fetchSentRequests = async () => {
-    const token = localStorage.getItem("Authorization");
-    if (!token) {
-      alert("Authorization token is missing. Please log in again.");
-      return;
-    }
-
-    try {
-      // Fetch requests sent by the logged-in user
-      const response = await axios.get(
-        "http://localhost:8080/api/v1/moneyrequest/moneyRequests?type=sent", // Correct endpoint for sent requests
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
-      setSentRequests(response.data.data);
-    } catch (error) {
-      console.error("Error fetching sent money requests:", error.response?.data || error.message);
-      alert("Failed to fetch sent requests. Please try again.");
+      console.error(`Error fetching ${type} money requests:`, error.response?.data || error.message);
+      alert(`Failed to fetch ${type} requests. Please try again.`);
+      return [];
     }
   };
 
   useEffect(() => {
-    fetchRequests();
-    fetchSentRequests();
+    const loadData = async () => {
+      const received = await fetchRequests("received");
+      const sent = await fetchRequests("sent");
+      setRequests(received);
+      setSentRequests(sent);
+    };
+
+    loadData();
   }, []);
 
   const handleAction = async (requestId, action) => {
@@ -72,7 +54,7 @@ const MoneyRequests = () => {
     try {
       const response = await axios.post(
         `http://localhost:8080/api/v1/moneyrequest/handleRequest`,
-        {requestId,action},
+        { requestId, action },
         {
           headers: {
             Authorization: token,
@@ -80,6 +62,8 @@ const MoneyRequests = () => {
         }
       );
       alert(`Request ${action === "accepted" ? "accepted" : "rejected"} successfully.`);
+
+      // Update the requests list
       setRequests((prevRequests) =>
         prevRequests.filter((request) => request._id !== requestId)
       );
@@ -123,7 +107,14 @@ const MoneyRequests = () => {
             </button>
           </>
         )}
-        {isSent && (
+        {!isSent && request.status !== "pending" && (
+          <p
+            className={`text-sm p-3 rounded-xl font-bold ${request.status === "accepted" ? "bg-green-300 text-green-800" : "bg-red-300 text-red-800"}`}
+          >
+             {request.status}
+          </p>
+        )}
+        {isSent &&  (
           <p
             className={`text-sm p-3 rounded-xl font-bold ${
               request.status === "accepted"
@@ -139,7 +130,20 @@ const MoneyRequests = () => {
       </div>
     </div>
   );
-  
+
+  const sortedRequests = (requests) => {
+    return requests.sort((a, b) => {
+      const statusOrder = { pending: 0, accepted: 1, rejected: 2 };
+      const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+
+      // If status is the same, compare by createdAt date in descending order
+      if (statusCompare === 0) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+
+      return statusCompare;
+    });
+  };
 
   return (
     <div className="flex flex-col items-center bg-gray-100 min-h-screen p-4">
@@ -164,16 +168,16 @@ const MoneyRequests = () => {
       {/* Requests Display */}
       <div className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-4">
         {activeTab === "received" ? (
-          requests.length === 0 ? (
+          sortedRequests(requests).length === 0 ? (
             <p className="text-center text-gray-600">No money requests available.</p>
           ) : (
-            requests.map((request) => renderRequest(request, false))
+            sortedRequests(requests).map((request) => renderRequest(request, false))
           )
         ) : (
-          sentRequests.length === 0 ? (
+          sortedRequests(sentRequests).length === 0 ? (
             <p className="text-center text-gray-600">No sent money requests available.</p>
           ) : (
-            sentRequests.map((request) => renderRequest(request, true))
+            sortedRequests(sentRequests).map((request) => renderRequest(request, true))
           )
         )}
       </div>

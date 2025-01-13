@@ -133,6 +133,21 @@ export const viewMoneyRequests = async (req, res) => {
         .populate("receiverId", "email FirstName LastName");
     }
 
+    // Sort the requests: 
+    // 1. Sort by status ('pending' first, then 'accepted', 'rejected')
+    // 2. Then, sort by date (newest first)
+    requests.sort((a, b) => {
+      const statusOrder = { pending: 0, accepted: 1, rejected: 2 };
+      const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+
+      // If status is the same, compare by createdAt date in descending order
+      if (statusCompare === 0) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+
+      return statusCompare;
+    });
+
     res.status(200).json({
       success: true,
       message: "Money requests retrieved successfully",
@@ -144,9 +159,10 @@ export const viewMoneyRequests = async (req, res) => {
 };
 
 
+
 export const getAccountSummary = async (req, res) => {
   const userId = req.user?.id;
-
+console.log(req.user);
   try {
     const account = await Account.findOne({ userId });
 
