@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowLeftRight, CheckCircle, XCircle, Clock } from 'lucide-react';
+import toast, { Toaster } from "react-hot-toast";
+
 
 const MoneyRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -11,7 +13,7 @@ const MoneyRequests = () => {
   const fetchRequests = async (type) => {
     const token = localStorage.getItem("Authorization");
     if (!token) {
-      alert("Authorization token is missing. Please log in again.");
+      toast.error("Authorization token is missing. Please log in again.");
       return [];
     }
 
@@ -27,7 +29,7 @@ const MoneyRequests = () => {
       return response.data.data;
     } catch (error) {
       console.error(`Error fetching ${type} money requests:`, error);
-      alert(`Failed to fetch ${type} requests. Please try again.`);
+      toast.error(`Failed to fetch ${type} requests. Please try again.`);
       return [];
     }
   };
@@ -48,7 +50,7 @@ const MoneyRequests = () => {
   const handleAction = async (requestId, action) => {
     const token = localStorage.getItem("Authorization");
     if (!token) {
-      alert("Authorization token is missing. Please log in again.");
+      toast.error("Authorization token is missing. Please log in again.");
       return;
     }
 
@@ -63,7 +65,7 @@ const MoneyRequests = () => {
           },
         }
       );
-      alert(`Request ${action === "accepted" ? "accepted" : "rejected"} successfully.`);
+      toast.success(`Request ${action === "accepted" ? "accepted" : "rejected"} successfully.`);
 
       setRequests((prevRequests) =>
         prevRequests.map((request) =>
@@ -77,7 +79,7 @@ const MoneyRequests = () => {
       );
     } catch (error) {
       console.error(`Error ${action}ing request:`, error);
-      alert(`Failed to ${action} request. Please try again.`);
+      toast.error(`Failed to ${action} request. Please try again.`);
     } finally {
       setLoading(false);
     }
@@ -153,6 +155,7 @@ const MoneyRequests = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen p-4 md:p-8">
+      <Toaster/>
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">Money Requests</h1>
 

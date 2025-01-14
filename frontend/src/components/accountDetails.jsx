@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import toast, { Toaster } from 'react-hot-toast';
 const AccountDetails = () => {
   const [userData, setUserData] = useState({
     firstName: '',
@@ -18,7 +18,7 @@ const AccountDetails = () => {
     const fetchAccountDetails = async () => {
       const token = localStorage.getItem('Authorization');
       if (!token) {
-        alert('Authorization token is missing. Please log in again.');
+        toast.error('Authorization token is missing. Please log in again.');
         return;
       }
 
@@ -44,7 +44,7 @@ const AccountDetails = () => {
         });
       } catch (error) {
         console.error('Error fetching account details:', error.response?.data || error.message);
-        alert('Failed to fetch account details. Please try again.');
+        toast.error('Failed to fetch account details. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -55,6 +55,7 @@ const AccountDetails = () => {
 
   const TransactionList = ({ transactions, title, type }) => (
     <div className="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+      <div><Toaster/></div>
       <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
       <ul className="space-y-3">
         {transactions.slice(0, 5).map((txn, index) => (

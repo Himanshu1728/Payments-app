@@ -17,6 +17,7 @@ const Dashboard2 = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("send");
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Track authentication state
   const navigate = useNavigate();
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -27,15 +28,36 @@ const Dashboard2 = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("Authorization");
+
     if (!token) {
-      console.error("Authorization token is missing");
       navigate("/signin");
       return;
     }
 
+    const verifyUser = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/v1/me", {
+          headers: { Authorization: token },
+        });
+        console.log(response.data);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error("Authentication failed:", error.response?.data || error.message);
+        setIsAuthenticated(false);
+        navigate("/signin");
+      }
+    };
+
+    verifyUser();
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
     const fetchBalanceAndUsers = async () => {
       setLoading(true);
       try {
+        const token = localStorage.getItem("Authorization");
         const balanceResponse = await axios.get("http://localhost:8080/api/v1/account/getBalance", {
           headers: { Authorization: token },
         });
@@ -54,11 +76,12 @@ const Dashboard2 = () => {
     };
 
     fetchBalanceAndUsers();
-  }, [debouncedSearchQuery, navigate]);
+  }, [debouncedSearchQuery, isAuthenticated]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">

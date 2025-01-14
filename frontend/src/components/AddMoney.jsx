@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import toast, {Toaster} from "react-hot-toast"
 const AddMoney = () => {
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
@@ -12,7 +12,7 @@ const AddMoney = () => {
   useEffect(() => {
     const token = localStorage.getItem("Authorization");
     if (!token) {
-      alert("Authorization token is missing. Please log in again.");
+      toast.error("Authorization token is missing. Please log in again.");
       navigate("/signin");
     }
   }, [navigate]);
@@ -61,6 +61,7 @@ const AddMoney = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex justify-center items-center p-4">
+    <Toaster/>
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md transition-all duration-300 hover:shadow-xl">
         <h2 className="text-3xl font-bold mb-6 text-center text-indigo-700">Add Money</h2>
         <p className="text-gray-600 mb-8 text-center">

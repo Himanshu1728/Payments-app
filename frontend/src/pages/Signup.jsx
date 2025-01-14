@@ -25,7 +25,7 @@ function Signup() {
     e.preventDefault();
     try {
       await axios.post("http://localhost:8080/api/v1/user/signup", formData);
-      navigate("/dashboard");
+      navigate("/signin");
     } catch (error) {
       console.error('Error submitting the form:', error);
     }

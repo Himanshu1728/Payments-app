@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 const Request = () => {
   const [searchParams] = useSearchParams();
@@ -51,7 +52,7 @@ const Request = () => {
         }
       );
 
-      alert(`Successfully requested ₹${amount} from ${firstName} ${lastName}!`);
+      toast.success(`Successfully requested ₹${amount} from ${firstName} ${lastName}!`);
       setAmount("");
       setNote("");
       navigate("/dashboard");
@@ -65,6 +66,7 @@ const Request = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex justify-center items-center p-4">
+     <Toaster/>
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full space-y-6">
         <h2 className="text-3xl font-bold text-gray-800 text-center">
           Request Money from {firstName} {lastName}
