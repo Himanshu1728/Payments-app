@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaCloud, FaArrowRight, FaChartLine, FaUsers, FaLock } from 'react-icons/fa';
+import {Link} from "react-router-dom"
 import axios from 'axios';
 const LandingPage = () => {
   
@@ -48,23 +49,21 @@ const LandingPage = () => {
             ))}
           </div>
           {isAuthenticated ? (
-            <a
-              href="/dashboard"
+            <Link
+              to="/dashboard"
               className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white px-6 py-2 rounded-full hover:from-indigo-700 hover:to-blue-600 transition duration-300 transform hover:scale-105"
             >
               Dashboard
-            </a>
+            </Link>
           ) : (
             <div className="flex space-x-4">
-              <a href="/signin" className="text-gray-700 hover:text-indigo-600 transition duration-300">
-                Sign In
-              </a>
-              <a
-                href="/signup"
+             
+              <Link
+                to="/signup"
                 className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white px-6 py-2 rounded-full hover:from-indigo-700 hover:to-blue-600 transition duration-300 transform hover:scale-105"
               >
-                Sign Up
-              </a>
+                Sign Up/Sign in
+              </Link>
             </div>
           )}
         </nav>
