@@ -1,15 +1,18 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import axios from 'axios';
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import AuthLayout from '../components/AuthLayout';
 
-const Signup = () => {
- const navigate=useNavigate();
-  const [formData,setFormData]=useState({
-    FirstName:"",
-    LastName:"",
-    email:"",
-    password:"",
-  })
+function Signup() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    FirstName: "",
+    LastName: "",
+    email: "",
+    password: "",
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -20,90 +23,75 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-  
     try {
-      const response = await axios.post("http://localhost:8080/api/v1/user/signup", formData);
-      console.log('Server Response:', response.data);
-     navigate("/dashboard");
+      await axios.post("http://localhost:8080/api/v1/user/signup", formData);
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Error submitting the form:', error.response?.data || error.message);
+      console.error('Error submitting the form:', error);
     }
   };
+
   return (
-   
+    <AuthLayout title="Create your account">
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <div className="rounded-md shadow-sm -space-y-px">
+          {[
+            { name: "FirstName", label: "First Name", type: "text", autoComplete: "given-name" },
+            { name: "LastName", label: "Last Name", type: "text", autoComplete: "family-name" },
+            { name: "email", label: "Email address", type: "email", autoComplete: "email" },
+            { name: "password", label: "Password", type: "password", autoComplete: "new-password" },
+          ].map((field, index) => (
+            <motion.div
+              key={field.name}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <label htmlFor={field.name} className="sr-only">{field.label}</label>
+              <input
+                id={field.name}
+                name={field.name}
+                type={field.type}
+                autoComplete={field.autoComplete}
+                required
+                className={`appearance-none rounded-none relative block w-full px-3 mb-2 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 ${
+                  index === 0 ? 'rounded-t-md' : index === 3 ? 'rounded-b-md' : ''
+                } focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+                placeholder={field.label}
+                value={formData[field.name]}
+                onChange={handleChange}
+              />
+            </motion.div>
+          ))}
+        </div>
 
-
-<div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-4">Sign Up</h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="flex flex-col">
-            <label htmlFor="FirstName" className="text-sm font-medium text-gray-700">First Name</label>
-            <input
-              type="text"
-              id="FirstName"
-              name="FirstName"
-              onChange={handleChange}
-              placeholder="Enter your first name"
-              value={formData.FirstName}
-              required
-              className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="LastName" className="text-sm font-medium text-gray-700">Last Name</label>
-            <input
-              type="text"
-              id="LastName"
-              name="LastName"
-              onChange={handleChange}
-              placeholder="Enter your last name"
-              value={formData.LastName}
-              required
-              className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              id="email"
-              onChange={handleChange}
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              required
-              className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              onChange={handleChange}
-              id="password"
-              name="password"
-              placeholder="The password must be at least 6 characters long"
-              required
-              value={formData.password}
-              className="mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
           <button
             type="submit"
-            
-            className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition duration-200"
+            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
           >
-            Sign Up
+            Sign up
           </button>
-        </form>
-        <p className="text-center text-sm text-gray-600 mt-4">
-        Already have an account? <Link to="/signin" className="text-green-500 hover:underline">SignIn</Link>
-        </p>
-      </div>
-    </div>
-  )
+        </motion.div>
+      </form>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="mt-2 text-center text-sm text-gray-600"
+      >
+        Already have an account?{' '}
+        <Link to="/signin" className="font-medium text-indigo-600 hover:text-indigo-500">
+          Sign in
+        </Link>
+      </motion.p>
+    </AuthLayout>
+  );
 }
 
-export default Signup
+export default Signup;
