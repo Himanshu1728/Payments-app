@@ -34,7 +34,7 @@ const LandingPage = () => {
           <div className="flex items-center space-x-2">
             <FaCloud className="w-8 h-8 text-indigo-600" />
             <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-500">
-              PaymentsApp
+            PaySphere
             </span>
           </div>
           <div className="hidden md:flex space-x-8">
