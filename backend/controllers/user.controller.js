@@ -69,20 +69,20 @@ export const signincontroller = async (req, res) => {
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
   }
-
+console.log("")
   const { email, password } = validation.data;  
-
+  
   try {
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
       return res.status(401).json({ message: "User does not exist" });
     }
-
+   
     const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);  
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Wrong credentials" });
     }
-
+    
     const token = jwt.sign(
       { id: existingUser._id, email: existingUser.email },
       process.env.JWT_SECRET,
@@ -151,7 +151,7 @@ export const updateUserCredentials = async (req, res) => {
 
 export const searchUsers = async (req, res) => {
   const filter = req.query.filter || ""; 
-
+ 
   try {
    
     const users = await User.find({

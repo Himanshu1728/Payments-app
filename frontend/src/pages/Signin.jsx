@@ -24,6 +24,7 @@ function Signin() {
     try {
       const response = await axios.post("http://localhost:8080/api/v1/user/signin", formData);
       const token = response.data.token;
+      console.log(token,":token")
       localStorage.setItem("Authorization", `Bearer ${token}`);
       navigate("/dashboard");
     } catch (error) {
