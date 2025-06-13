@@ -11,7 +11,7 @@ import Moneyrequests from "../components/Moneyrequests";
 
 
 
-import AccountDetails from "../components/AccountDetails";
+import AccountDetails from "../components/AccountDetailsTemp";
 import { Cloud } from "lucide-react";
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
