@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useDebounce from "../hooks/useDebounce";
-
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+});
 const RequestMoney = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
@@ -31,8 +33,8 @@ const RequestMoney = () => {
       }
 
       try {
-        const usersResponse = await axios.get(
-          "http://localhost:8080/api/v1/user/bulk",
+        const usersResponse = await api.get(
+          "/user/bulk",
           {
             headers: {
               Authorization: token,

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+});
 const AccountDetails = () => {
   const [userData, setUserData] = useState({
     firstName: '',
@@ -23,9 +26,10 @@ const AccountDetails = () => {
       }
 
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/moneyrequest/accountSummary', {
-          headers: { Authorization: token },
-        });
+        const response = await api.get('/moneyrequest/accountSummary', {
+  headers: { Authorization: token },
+});
+
 
         const { totalTransactions, totalDebited, totalCredited } = response.data;
         const { FirstName, LastName, email } = response.data.user;

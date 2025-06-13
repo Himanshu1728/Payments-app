@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import AuthLayout from '../components/AuthLayout';
-
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+});
 function Signin() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -22,7 +24,7 @@ function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8080/api/v1/user/signin", formData);
+      const response = await api.post("/user/signin", formData);
       const token = response.data.token;
       console.log(token,":token")
       localStorage.setItem("Authorization", `Bearer ${token}`);

@@ -10,7 +10,9 @@ import useDebounce from "../hooks/useDebounce";
 import Moneyrequests from "../components/Moneyrequests";
 import AccountDetails from "../components/AccountDetails";
 import { Cloud } from "lucide-react";
-
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+});
 const Dashboard2 = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [balance, setBalance] = useState(0);
@@ -36,7 +38,7 @@ const Dashboard2 = () => {
 
     const verifyUser = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/me", {
+        const response = await api.get("/me", {
           headers: { Authorization: token },
         });
         console.log(response.data);
@@ -58,12 +60,12 @@ const Dashboard2 = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem("Authorization");
-        const balanceResponse = await axios.get("http://localhost:8080/api/v1/account/getBalance", {
+        const balanceResponse = await api.get("/account/getBalance", {
           headers: { Authorization: token },
         });
         setBalance(parseFloat(balanceResponse.data.balance.toFixed(2)));
 
-        const usersResponse = await axios.get("http://localhost:8080/api/v1/user/bulk", {
+        const usersResponse = await api.get("/user/bulk", {
           headers: { Authorization: token },
           params: { filter: debouncedSearchQuery },
         });

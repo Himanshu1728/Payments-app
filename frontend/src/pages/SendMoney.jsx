@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+});
 const SendMoney = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userid");
@@ -38,8 +40,8 @@ const SendMoney = () => {
 
     setLoading(true);
     try {
-      await axios.post(
-        "http://localhost:8080/api/v1/account/transaction",
+      await api.post(
+        "/account/transaction",
         {
           toAccountId: userId,
           amount: parseFloat(amount),

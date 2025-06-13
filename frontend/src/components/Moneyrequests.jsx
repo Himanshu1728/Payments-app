@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowLeftRight, CheckCircle, XCircle, Clock } from 'lucide-react';
 import toast, { Toaster } from "react-hot-toast";
-
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+});
 
 const MoneyRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -18,8 +20,8 @@ const MoneyRequests = () => {
     }
 
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/moneyrequest/moneyRequests?type=${type}`,
+      const response = await api.get(
+        `/moneyrequest/moneyRequests?type=${type}`,
         {
           headers: {
             Authorization: token,
@@ -56,8 +58,8 @@ const MoneyRequests = () => {
 
     setLoading(true);
     try {
-      await axios.post(
-        `http://localhost:8080/api/v1/moneyrequest/handleRequest`,
+      await api.post(
+        `/moneyrequest/handleRequest`,
         { requestId, action },
         {
           headers: {

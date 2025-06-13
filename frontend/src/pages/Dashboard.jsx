@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useDebounce from "../hooks/useDebounce"; // Import the debounce hook
 import { Cloud } from "lucide-react";
-
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+});
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [balance, setBalance] = useState(0);

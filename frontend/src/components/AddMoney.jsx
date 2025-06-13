@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast, {Toaster} from "react-hot-toast"
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+});
 const AddMoney = () => {
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
@@ -36,8 +39,8 @@ const AddMoney = () => {
 
     try {
       const token = localStorage.getItem("Authorization");
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/account/addBalance",
+      const response = await api.post(
+        "/account/addBalance",
         { amount: enteredAmount },
         {
           headers: {

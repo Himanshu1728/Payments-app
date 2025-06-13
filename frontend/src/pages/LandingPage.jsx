@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { FaCloud, FaArrowRight, FaChartLine, FaUsers, FaLock } from 'react-icons/fa';
 import {Link} from "react-router-dom"
 import axios from 'axios';
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+});
 const LandingPage = () => {
   
 
@@ -11,8 +14,8 @@ const LandingPage = () => {
   useEffect(() => {
     const token = localStorage.getItem("Authorization");
     if (token) {
-      axios
-        .get("http://localhost:8080/api/v1/me", {
+      api
+        .get("/me", {
           headers: { Authorization: token },
         })
         .then((response) => {
