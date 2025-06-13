@@ -22,6 +22,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("Authorization");
+    console.log("token :",token);
     if (!token) {
       console.error("Authorization token is missing");
       navigate("/signin");

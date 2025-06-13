@@ -59,15 +59,36 @@ const LandingPage = () => {
               Dashboard
             </Link>
           ) : (
-            <div className="flex space-x-4">
-             
-              <Link
-                to="/signup"
-                className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white px-6 py-2 rounded-full hover:from-indigo-700 hover:to-blue-600 transition duration-300 transform hover:scale-105"
-              >
-                Sign Up/Sign in
-              </Link>
-            </div>
+           <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+  <Link
+    to="/signup"
+    className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white px-6 py-2 rounded-full hover:from-indigo-700 hover:to-blue-600 transition duration-300 transform hover:scale-105 text-center"
+  >
+    Sign Up / Sign In
+  </Link>
+  <button
+    onClick={async () => {
+      try {
+       
+        const response = await api.post("/user/signin", {
+          email: "test@dtu.ac.in",
+          password: "12345678",
+        });
+      const token = response.data.token;
+      console.log(token,":token")
+      localStorage.setItem("Authorization", `Bearer ${token}`);
+      window.location.href = "/dashboard";
+      } catch (error) {
+        console.error("Test login failed:", error.response?.data || error.message);
+        alert("Test login failed. Check console for details.");
+      }
+    }}
+    className="bg-white text-indigo-600 px-6 py-2 rounded-full border border-indigo-600 hover:bg-indigo-50 transition duration-300 transform hover:scale-105"
+  >
+    Sign in with Test Credentials
+  </button>
+</div>
+
           )}
         </nav>
       </header>
