@@ -8,7 +8,10 @@ import AddMoney from "../components/AddMoney";
 import RequestMoney from "../components/RequestMoney";
 import useDebounce from "../hooks/useDebounce";
 import Moneyrequests from "../components/Moneyrequests";
-import AccountDetails from "../components/AccountDetails.jsx";
+
+
+
+import AccountDetails from "../components/AccountDetails";
 import { Cloud } from "lucide-react";
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
