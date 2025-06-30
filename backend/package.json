@@ -12,6 +12,6 @@
     "zod": "^3.24.1"
   },
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js"
   }
 }
