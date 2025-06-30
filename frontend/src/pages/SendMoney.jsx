@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
 });
+
 const SendMoney = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("userid");
@@ -26,7 +28,7 @@ const SendMoney = () => {
 
   const handleSendMoney = async () => {
     setError("");
-    if (!amount || amount <= 0) {
+    if (!amount || parseFloat(amount) <= 0) {
       setError("Please enter a valid amount.");
       return;
     }
@@ -47,11 +49,7 @@ const SendMoney = () => {
           amount: parseFloat(amount),
           description: note,
         },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
+        { headers: { Authorization: token } }
       );
 
       toast.success(`Successfully sent ₹${amount} to ${firstName} ${lastName}!`);
@@ -66,9 +64,15 @@ const SendMoney = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSendMoney();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex justify-center items-center p-4">
-      <Toaster/>
+      <Toaster />
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full space-y-6">
         <h2 className="text-3xl font-bold text-gray-800 text-center">
           Send Money to {firstName} {lastName}
@@ -89,6 +93,8 @@ const SendMoney = () => {
                 placeholder="0.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
+                onKeyPress={handleKeyPress}
+                min="1"
                 className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 py-2 pr-12 sm:text-sm border-gray-300 rounded-md"
               />
             </div>
@@ -104,6 +110,7 @@ const SendMoney = () => {
               placeholder="Add a note for this transaction"
               value={note}
               onChange={(e) => setNote(e.target.value)}
+              onKeyPress={handleKeyPress}
               className="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
             />
           </div>
@@ -142,4 +149,3 @@ const SendMoney = () => {
 };
 
 export default SendMoney;
-
