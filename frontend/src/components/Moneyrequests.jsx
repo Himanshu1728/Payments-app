@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowLeftRight, CheckCircle, XCircle, Clock } from 'lucide-react';
 import toast, { Toaster } from "react-hot-toast";
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
 });
@@ -20,14 +21,9 @@ const MoneyRequests = () => {
     }
 
     try {
-      const response = await api.get(
-        `/moneyrequest/moneyRequests?type=${type}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+      const response = await api.get(`/moneyrequest/moneyRequests?type=${type}`, {
+        headers: { Authorization: token },
+      });
       return response.data.data;
     } catch (error) {
       console.error(`Error fetching ${type} money requests:`, error);
@@ -58,15 +54,9 @@ const MoneyRequests = () => {
 
     setLoading(true);
     try {
-      await api.post(
-        `/moneyrequest/handleRequest`,
-        { requestId, action },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+      await api.post(`/moneyrequest/handleRequest`, { requestId, action }, {
+        headers: { Authorization: token },
+      });
       toast.success(`Request ${action === "accepted" ? "accepted" : "rejected"} successfully.`);
 
       setRequests((prevRequests) =>
@@ -88,7 +78,7 @@ const MoneyRequests = () => {
   };
 
   const renderRequest = (request, isSent) => (
-    <div key={request._id} className="bg-white rounded-lg shadow-md p-6 mb-4 transition-all duration-300 hover:shadow-lg">
+    <div key={request._id} className="bg-white rounded-xl shadow-lg p-6 mb-4 transition-all duration-300 hover:shadow-emerald-300 hover:scale-[1.02]">
       <div className="flex justify-between items-start mb-4">
         <div>
           <p className="text-lg font-semibold">
@@ -103,7 +93,7 @@ const MoneyRequests = () => {
           </p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-blue-600">₹{request.amount.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-emerald-600">₹{request.amount.toFixed(2)}</p>
           <p className="text-sm text-gray-500">{new Date(request.createdAt).toLocaleString()}</p>
         </div>
       </div>
@@ -111,11 +101,11 @@ const MoneyRequests = () => {
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           {request.status === "pending" && <Clock className="text-yellow-500 mr-2" />}
-          {request.status === "accepted" && <CheckCircle className="text-green-500 mr-2" />}
+          {request.status === "accepted" && <CheckCircle className="text-emerald-500 mr-2" />}
           {request.status === "rejected" && <XCircle className="text-red-500 mr-2" />}
           <span className={`font-semibold ${
             request.status === "pending" ? "text-yellow-700" :
-            request.status === "accepted" ? "text-green-700" : "text-red-700"
+            request.status === "accepted" ? "text-emerald-700" : "text-red-700"
           }`}>
             {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
           </span>
@@ -125,14 +115,14 @@ const MoneyRequests = () => {
             <button
               onClick={() => handleAction(request._id, "accepted")}
               disabled={loading}
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-300 disabled:opacity-50"
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors duration-300 disabled:opacity-50"
             >
               Accept
             </button>
             <button
               onClick={() => handleAction(request._id, "rejected")}
               disabled={loading}
-              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-300 disabled:opacity-50"
+              className="px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors duration-300 disabled:opacity-50"
             >
               Reject
             </button>
@@ -156,29 +146,29 @@ const MoneyRequests = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4 md:p-8">
-      <Toaster/>
+    <div className="bg-gradient-to-br from-emerald-50 to-amber-50 min-h-screen p-4 md:p-8">
+      <Toaster />
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">Money Requests</h1>
+        <h1 className="text-4xl font-extrabold mb-8 text-center text-emerald-700">Money Requests</h1>
 
-        <div className="bg-white rounded-lg shadow-md p-4 mb-8">
-          <div className="flex justify-center mb-4">
+        <div className="bg-white rounded-xl shadow-lg p-4 mb-8">
+          <div className="flex justify-center mb-4 space-x-4">
             <button
-              className={`px-6 py-2 rounded-full ${
+              className={`px-6 py-2 rounded-full font-medium transition transform hover:scale-105 ${
                 activeTab === "received"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-emerald-600 text-white"
                   : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-              } transition-colors duration-300 mr-4`}
+              }`}
               onClick={() => setActiveTab("received")}
             >
               Requests for Me
             </button>
             <button
-              className={`px-6 py-2 rounded-full ${
+              className={`px-6 py-2 rounded-full font-medium transition transform hover:scale-105 ${
                 activeTab === "sent"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-emerald-600 text-white"
                   : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-              } transition-colors duration-300`}
+              }`}
               onClick={() => setActiveTab("sent")}
             >
               Requests Sent by Me
@@ -187,7 +177,7 @@ const MoneyRequests = () => {
 
           {loading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-600"></div>
             </div>
           ) : (
             <div className="space-y-4">
