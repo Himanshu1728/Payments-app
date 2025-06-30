@@ -1,3 +1,5 @@
+// Updated Dashboard2.jsx with new visual theme
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -8,21 +10,20 @@ import AddMoney from "../components/AddMoney";
 import RequestMoney from "../components/RequestMoney";
 import useDebounce from "../hooks/useDebounce";
 import Moneyrequests from "../components/Moneyrequests";
-
-
-
 import AccountDetails from "../components/AccountDetailsTemp";
 import { Cloud } from "lucide-react";
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
 });
+
 const Dashboard2 = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [balance, setBalance] = useState(0);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("send");
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Track authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -87,17 +88,16 @@ const Dashboard2 = () => {
     setActiveTab(tab);
   };
 
-
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-50 via-purple-50 to-yellow-50">
       {/* AppBar */}
-      <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-            <Cloud className="w-8 h-8 " />
-            <span className="text-2xl font-bold text-white">PaySphere</span>
+      <header className="bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-xl rounded-b-3xl">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <Cloud className="w-10 h-10" />
+            <span className="text-3xl font-extrabold text-white">NovaPay</span>
           </div>
-          <div className="w-10 h-10 flex items-center justify-center bg-white text-indigo-600 rounded-full text-lg font-bold shadow-md">
+          <div className="w-12 h-12 flex items-center justify-center bg-white text-purple-600 rounded-full text-lg font-bold shadow-lg">
             H
           </div>
         </div>
@@ -107,7 +107,7 @@ const Dashboard2 = () => {
       <main className="flex-1 container mx-auto px-4 py-8">
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-pink-500"></div>
           </div>
         ) : (
           <>
