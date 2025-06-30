@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import toast, {Toaster} from "react-hot-toast"
+import toast, { Toaster } from "react-hot-toast";
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
 });
+
 const AddMoney = () => {
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
@@ -42,11 +44,7 @@ const AddMoney = () => {
       const response = await api.post(
         "/account/addBalance",
         { amount: enteredAmount },
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
+        { headers: { Authorization: token } }
       );
 
       setSuccessMessage(`₹${enteredAmount.toFixed(2)} has been added to your account successfully.`);
@@ -63,12 +61,12 @@ const AddMoney = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex justify-center items-center p-4">
-    <Toaster/>
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md transition-all duration-300 hover:shadow-xl">
-        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-700">Add Money</h2>
-        <p className="text-gray-600 mb-8 text-center">
-          Add money to your account. Maximum ₹10,000 per transaction.
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-amber-100 flex justify-center items-center p-4">
+      <Toaster />
+      <div className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-md transition-all duration-300 hover:shadow-emerald-300">
+        <h2 className="text-3xl font-extrabold mb-6 text-center text-emerald-700">Add Funds</h2>
+        <p className="text-gray-700 mb-8 text-center">
+          Quickly add money to your account. Maximum ₹10,000 per transaction.
         </p>
 
         <div className="mb-6">
@@ -83,17 +81,19 @@ const AddMoney = () => {
               placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full p-3 pl-8 border rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              className="w-full p-3 pl-8 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
             />
           </div>
         </div>
 
         {error && (
-          <p className="text-red-600 text-sm mb-4 bg-red-50 p-3 rounded-lg border border-red-200">{error}</p>
+          <p className="text-rose-600 text-sm mb-4 bg-rose-50 p-3 rounded-lg border border-rose-200">
+            {error}
+          </p>
         )}
 
         {successMessage && (
-          <p className="text-green-600 text-sm mb-4 bg-green-50 p-3 rounded-lg border border-green-200">
+          <p className="text-emerald-600 text-sm mb-4 bg-emerald-50 p-3 rounded-lg border border-emerald-200">
             {successMessage}
           </p>
         )}
@@ -101,15 +101,24 @@ const AddMoney = () => {
         <button
           onClick={handleAddMoney}
           disabled={isLoading}
-          className={`w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition duration-200 ${
+          className={`w-full bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 transition duration-200 ${
             isLoading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
           {isLoading ? (
             <span className="flex items-center justify-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Processing...
             </span>
@@ -123,4 +132,3 @@ const AddMoney = () => {
 };
 
 export default AddMoney;
-
