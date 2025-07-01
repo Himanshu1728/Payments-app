@@ -1,5 +1,3 @@
-// Updated Dashboard2.jsx with new visual theme
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +30,7 @@ const Dashboard2 = () => {
     setSearchQuery(e.target.value);
   };
 
+  // Authentication Check
   useEffect(() => {
     const token = localStorage.getItem("Authorization");
 
@@ -57,6 +56,7 @@ const Dashboard2 = () => {
     verifyUser();
   }, [navigate]);
 
+  // Fetch Balance and Users
   useEffect(() => {
     if (!isAuthenticated) return;
 
@@ -64,6 +64,7 @@ const Dashboard2 = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem("Authorization");
+
         const balanceResponse = await api.get("/account/getBalance", {
           headers: { Authorization: token },
         });
