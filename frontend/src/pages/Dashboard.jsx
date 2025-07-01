@@ -31,21 +31,15 @@ const Dashboard = () => {
     const fetchBalanceAndUsers = async () => {
       setLoading(true);
       try {
-        const balanceResponse = await axios.get(
-          "http://localhost:8080/api/v1/account/getBalance",
-          {
-            headers: { Authorization: token },
-          }
-        );
+        const balanceResponse = await api.get("/account/getBalance", {
+          headers: { Authorization: token },
+        });
         setBalance(parseFloat(balanceResponse.data.balance.toFixed(2)));
 
-        const usersResponse = await axios.get(
-          "http://localhost:8080/api/v1/user/bulk",
-          {
-            headers: { Authorization: token },
-            params: { filter: debouncedSearchQuery },
-          }
-        );
+        const usersResponse = await api.get("/user/bulk", {
+          headers: { Authorization: token },
+          params: { filter: debouncedSearchQuery },
+        });
         setUsers(usersResponse.data?.users || []);
       } catch (error) {
         if (error.message === "Invalid or expired token") navigate("/signin");
