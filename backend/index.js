@@ -18,9 +18,11 @@ const app = express();
 
 // ✅ CORS Configuration for Vercel
 app.use(cors({
-    origin: "*", // For production, you can replace * with your Vercel frontend URL
-    credentials: true
+  origin: 'https://payments-app-nu.vercel.app', // your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
 }));
+
 
 // ✅ Middleware to parse JSON
 app.use(express.json());
