@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import AuthLayout from '../components/AuthLayout';
+import toast, { Toaster } from 'react-hot-toast';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -31,12 +32,23 @@ function Signup() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    // Trim input to avoid unnecessary spaces
+    const trimmedFormData = {
+      FirstName: formData.FirstName.trim(),
+      LastName: formData.LastName.trim(),
+      email: formData.email.trim(),
+      password: formData.password.trim(),
+    };
+
     try {
-      await api.post("/user/signup", formData);
+      await api.post("/user/signup", trimmedFormData);
+      toast.success('Account created successfully! Please sign in.');
       navigate("/signin");
     } catch (error) {
       console.error('Error submitting the form:', error.response?.data || error.message);
-      setError("Signup failed. Please try again.");
+      // Show backend error if available
+      setError(error.response?.data?.message || "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -44,6 +56,7 @@ function Signup() {
 
   return (
     <AuthLayout title="Create your account">
+      <Toaster />
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         <div className="rounded-md shadow-sm -space-y-px">
           {[
