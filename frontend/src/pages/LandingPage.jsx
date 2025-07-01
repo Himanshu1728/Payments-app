@@ -85,14 +85,12 @@ const LandingPage = () => {
               Send money, track expenses, and enjoy seamless transactions with NovaPay.
             </p>
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <motion.a
-                href="/signup"
-                className="bg-gradient-to-r from-green-600 to-yellow-500 text-white px-8 py-3 rounded-full hover:from-green-700 hover:to-yellow-600 transition duration-300 flex items-center justify-center"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <Link
+                to="/signup"
+                className="bg-gradient-to-r from-green-600 to-yellow-500 text-white px-8 py-3 rounded-full hover:from-green-700 hover:to-yellow-600 transition duration-300 flex items-center justify-center transform hover:scale-105"
               >
                 Get Started <FaPaperPlane className="ml-2 w-5 h-5" />
-              </motion.a>
+              </Link>
             </div>
           </motion.div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full">
