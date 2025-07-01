@@ -13,6 +13,7 @@ const Request = () => {
   const firstName = searchParams.get("Firstname");
   const lastName = searchParams.get("Lastname");
   const navigate = useNavigate();
+
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,14 +21,12 @@ const Request = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("Authorization");
-    if (!token) {
-      console.error("Authorization token is missing");
-      navigate("/signin");
-    }
+    if (!token) navigate("/signin");
   }, [navigate]);
 
   const handleRequestMoney = async () => {
     setError("");
+
     if (!amount || parseFloat(amount) <= 0) {
       setError("Please enter a valid amount.");
       return;
@@ -35,7 +34,7 @@ const Request = () => {
 
     const token = localStorage.getItem("Authorization");
     if (!token) {
-      setError("Authorization token is missing. Please log in again.");
+      toast.error("Authorization token is missing. Please log in again.");
       navigate("/signin");
       return;
     }
@@ -58,16 +57,14 @@ const Request = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Error during request:", error.response?.data || error.message);
-      setError("Request failed. Please try again.");
+      setError(error.response?.data?.message || "Request failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleRequestMoney();
-    }
+    if (e.key === "Enter") handleRequestMoney();
   };
 
   return (
