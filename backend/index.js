@@ -18,14 +18,17 @@ const app = express();
 
 // ✅ CORS Configuration for Vercel
 app.use(cors({
-  origin: 'https://payments-app-zvjc.vercel.app', 
+  origin: 'https://payments-app-zvjc.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 
+// ✅ Handle preflight requests
+app.options('*', cors());
 
 // ✅ Middleware to parse JSON
 app.use(express.json());
+
 
 // ✅ Test Route (Optional)
 app.get("/", (req, res) => {
